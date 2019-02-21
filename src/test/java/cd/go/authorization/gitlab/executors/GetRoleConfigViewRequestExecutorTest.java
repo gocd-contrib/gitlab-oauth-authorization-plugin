@@ -53,7 +53,7 @@ public class GetRoleConfigViewRequestExecutorTest {
         }
 
         final Elements inputs = document.select("textarea,input,select");
-        assertThat("should contains only inputs that defined in GitHubRoleConfiguration.java", inputs, hasSize(metadataList.size()));
+        assertThat("should contains only inputs that defined in GitLabRoleConfiguration.java", inputs, hasSize(metadataList.size()));
     }
 
     @Test

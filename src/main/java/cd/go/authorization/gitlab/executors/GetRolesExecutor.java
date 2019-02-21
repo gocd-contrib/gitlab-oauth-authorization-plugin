@@ -30,15 +30,15 @@ import static java.lang.String.format;
 
 public class GetRolesExecutor implements RequestExecutor {
     private final GetRolesRequest request;
-    private final GitLabAuthorizer gitHubAuthorizer;
+    private final GitLabAuthorizer gitLabAuthorizer;
 
     public GetRolesExecutor(GetRolesRequest request) {
         this(request, new GitLabAuthorizer());
     }
 
-    GetRolesExecutor(GetRolesRequest request, GitLabAuthorizer gitHubAuthorizer) {
+    GetRolesExecutor(GetRolesRequest request, GitLabAuthorizer gitLabAuthorizer) {
         this.request = request;
-        this.gitHubAuthorizer = gitHubAuthorizer;
+        this.gitLabAuthorizer = gitLabAuthorizer;
     }
 
     @Override
@@ -51,11 +51,11 @@ public class GetRolesExecutor implements RequestExecutor {
         GitLabUser user = request.getAuthConfig().gitLabConfiguration().gitLabClient().user(request.getAuthConfig().gitLabConfiguration().personalAccessToken());
 
         if (user == null) {
-            LOG.error(format("[Get User Roles] User %s does not exist in GitHub.", request.getUsername()));
+            LOG.error(format("[Get User Roles] User %s does not exist in GitLab.", request.getUsername()));
             return DefaultGoPluginApiResponse.error("");
         }
 
-        List<String> roles = gitHubAuthorizer.authorize(user, request.getAuthConfig(), request.getRoles());
+        List<String> roles = gitLabAuthorizer.authorize(user, request.getAuthConfig(), request.getRoles());
 
         LOG.debug(format("[Get User Roles] User %s has %s roles.", request.getUsername(), roles));
         return DefaultGoPluginApiResponse.success(GSON.toJson(roles));

@@ -35,8 +35,8 @@ public class ValidateUserRequestExecutor implements RequestExecutor {
     public GoPluginApiResponse execute() throws Exception {
         GitLabUser user = request.getAuthConfig().gitLabConfiguration().gitLabClient().user(request.getAuthConfig().gitLabConfiguration().personalAccessToken());
         if (user == null) {
-            LOG.error(format("[Is Valid User] User %s does not exist in GitHub.", request.getUsername()));
-            return DefaultGoPluginApiResponse.error(format("User '%s' does not exist in GitHub.", request.getUsername()));
+            LOG.error(format("[Is Valid User] User %s does not exist in GitLab.", request.getUsername()));
+            return DefaultGoPluginApiResponse.error(format("User '%s' does not exist in GitLab.", request.getUsername()));
         } else {
             LOG.info(format("[Is Valid User] %s is valid user.", request.getUsername()));
             return DefaultGoPluginApiResponse.success("");
