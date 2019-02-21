@@ -56,6 +56,10 @@ public class VerifyConnectionRequestExecutorTest {
                 "    {\n" +
                 "      \"key\": \"ClientSecret\",\n" +
                 "      \"message\": \"ClientSecret must not be blank.\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "       \"key\":\"PersonalAccessToken\",\n" +
+                "       \"message\":\"PersonalAccessToken must not be blank.\"\n" +
                 "    }\n" +
                 "  ],\n" +
                 "  \"status\": \"validation-failed\"\n" +

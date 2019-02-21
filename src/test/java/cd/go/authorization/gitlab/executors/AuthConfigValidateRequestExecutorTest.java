@@ -50,6 +50,10 @@ public class AuthConfigValidateRequestExecutorTest {
                 "    \"key\": \"ApplicationId\",\n" +
                 "    \"message\": \"ApplicationId must not be blank.\"\n" +
                 "  },\n" +
+                "  {" +
+                "   \"key\":\"PersonalAccessToken\",\n" +
+                "   \"message\":\"PersonalAccessToken must not be blank.\"\n" +
+                "   }," +
                 "  {\n" +
                 "    \"key\": \"ClientSecret\",\n" +
                 "    \"message\": \"ClientSecret must not be blank.\"\n" +
@@ -64,7 +68,8 @@ public class AuthConfigValidateRequestExecutorTest {
         when(request.requestBody()).thenReturn("{\n" +
                 "  \"ApplicationId\": \"client-id\",\n" +
                 "  \"AuthenticateWith\": \"GitLabEnterprise\",\n" +
-                "  \"ClientSecret\": \"client-secret\"" +
+                "  \"ClientSecret\": \"client-secret\",\n" +
+                "  \"PersonalAccessToken\":\"some-random-token\"" +
                 "}");
 
         GoPluginApiResponse response = AuthConfigValidateRequest.from(request).execute();

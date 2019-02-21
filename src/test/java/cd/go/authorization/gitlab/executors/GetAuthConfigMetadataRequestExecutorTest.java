@@ -71,7 +71,15 @@ public class GetAuthConfigMetadataRequestExecutorTest {
                 "      \"required\": false,\n" +
                 "      \"secure\": false\n" +
                 "    }\n" +
-                "  }" +
+                "  }," +
+                "  {" +
+                "   \"key\":\"PersonalAccessToken\"," +
+                "   \"metadata\":" +
+                "    {" +
+                "       \"required\":true," +
+                "       \"secure\":true" +
+                "    }" +
+                "   }"+
                 "]";
 
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);

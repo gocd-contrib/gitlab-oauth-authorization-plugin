@@ -32,7 +32,7 @@ import static java.text.MessageFormat.format;
 
 public class ProjectMembershipChecker {
 
-    public boolean memberOfAtLeastOneProject(GitLabUser gitLabUser, TokenInfo tokenInfo, GitLabClient gitLabClient, List<GitLabProject> projectsFromGitLabForAUser, Map<String, List<String>> projectsFromRole) throws IOException {
+    public boolean memberOfAtLeastOneProject(GitLabUser gitLabUser, String personalAccessToken, GitLabClient gitLabClient, List<GitLabProject> projectsFromGitLabForAUser, Map<String, List<String>> projectsFromRole) throws IOException {
         final List<GitLabProject> matchingProjects = filterGroupBasedOnRoleConfiguration(projectsFromGitLabForAUser, projectsFromRole);
 
         for (GitLabProject gitLabProject : matchingProjects) {
@@ -43,7 +43,7 @@ public class ProjectMembershipChecker {
                 return true;
             }
 
-            final MembershipInfo membershipInfo = gitLabClient.projectMembershipInfo(tokenInfo, gitLabProject.getId(), gitLabUser.getId());
+            final MembershipInfo membershipInfo = gitLabClient.projectMembershipInfo(personalAccessToken, gitLabProject.getId(), gitLabUser.getId());
 
             if (membershipInfo.getAccessLevel() != null && accessLevels.contains(membershipInfo.getAccessLevel().toString().toLowerCase())) {
                 LOG.info(format("User `{0}` is member of `{1}` project with access level `{2}`.", gitLabUser.getUsername(), gitLabProject.getName(), membershipInfo.getAccessLevel()));

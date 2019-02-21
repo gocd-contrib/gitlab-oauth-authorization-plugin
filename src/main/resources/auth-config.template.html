@@ -137,4 +137,16 @@
         <input ng-class="{'is-invalid-input': GOINPUTNAME[ClientSecret].$error.server}" type="password" ng-model="ClientSecret" ng-required="true"/>
         <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ClientSecret].$error.server}" ng-show="GOINPUTNAME[ClientSecret].$error.server">{{GOINPUTNAME[ClientSecret].$error.server}}</span>
     </div>
+
+    <div class="form_item_block">
+        <label ng-class="{'is-invalid-label': GOINPUTNAME[PersonalAccessToken].$error.server}">Personal Access Token:<span class='asterix'>*</span>
+            <div class="tooltip-info">
+              <span class="tooltip-content">
+                Personal access token with access:api permission is required.
+              </span>
+            </div>
+        </label>
+        <input ng-class="{'is-invalid-input': GOINPUTNAME[PersonalAccessToken].$error.server}" type="password" ng-model="PersonalAccessToken" ng-required="true"/>
+        <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[PersonalAccessToken].$error.server}" ng-show="GOINPUTNAME[PersonalAccessToken].$error.server">{{GOINPUTNAME[PersonalAccessToken].$error.server}}</span>
+    </div>
 </div>

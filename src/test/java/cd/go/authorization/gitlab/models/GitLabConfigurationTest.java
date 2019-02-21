@@ -45,13 +45,14 @@ public class GitLabConfigurationTest {
     @Test
     public void shouldSerializeToJSON() throws Exception {
         GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret",
-                AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url");
+                AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
 
         String expectedJSON = "{\n" +
                 "  \"ApplicationId\": \"client-id\",\n" +
                 "  \"ClientSecret\": \"client-secret\",\n" +
                 "  \"AuthenticateWith\": \"GitLabEnterprise\",\n" +
-                "  \"GitLabEnterpriseUrl\": \"http://enterprise.url\"" +
+                "  \"GitLabEnterpriseUrl\": \"http://enterprise.url\",\n" +
+                "  \"PersonalAccessToken\":\"some-random-token\"" +
                 "}";
 
         JSONAssert.assertEquals(expectedJSON, gitLabConfiguration.toJSON(), true);
@@ -60,7 +61,7 @@ public class GitLabConfigurationTest {
 
     @Test
     public void shouldConvertConfigurationToProperties() throws Exception {
-        GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret", AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url");
+        GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret", AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
 
         final Map<String, String> properties = gitLabConfiguration.toProperties();
 
