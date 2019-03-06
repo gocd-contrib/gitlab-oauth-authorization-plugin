@@ -49,20 +49,30 @@ public class GitLabConfiguration implements Validatable {
     @SerializedName("GitLabEnterpriseUrl")
     @ProfileField(key = "GitLabEnterpriseUrl", required = false, secure = false)
     private String gitLabEnterpriseUrl;
+
+    @Expose
+    @SerializedName("PersonalAccessToken")
+    @ProfileField(key = "PersonalAccessToken", required = true, secure = true)
+    private String personalAccessToken;
     private GitLabClient gitLabClient;
 
     public GitLabConfiguration() {
     }
 
     public GitLabConfiguration(String applicationId, String clientSecret) {
-        this(applicationId, clientSecret, AuthenticateWith.GITLAB, null);
+        this(applicationId, clientSecret, AuthenticateWith.GITLAB, null, "");
     }
 
-    public GitLabConfiguration(String applicationId, String clientSecret, AuthenticateWith authenticateWith, String gitLabEnterpriseUrl) {
+    public GitLabConfiguration(String applicationId, String clientSecret, AuthenticateWith authenticateWith, String gitLabEnterpriseUrl, String personalAccessToken) {
         this.applicationId = applicationId;
         this.clientSecret = clientSecret;
         this.authenticateWith = authenticateWith;
         this.gitLabEnterpriseUrl = gitLabEnterpriseUrl;
+        this.personalAccessToken = personalAccessToken;
+    }
+
+    public String personalAccessToken() {
+        return personalAccessToken;
     }
 
     public String applicationId() {

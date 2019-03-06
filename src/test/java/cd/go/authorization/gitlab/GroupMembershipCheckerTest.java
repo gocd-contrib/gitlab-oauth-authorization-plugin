@@ -57,10 +57,11 @@ public class GroupMembershipCheckerTest {
         final Map<String, List<String>> groupsFromRole = singletonMap("group-a", emptyList());
         final GitLabGroup gitLabGroup = mock(GitLabGroup.class);
         final List<GitLabGroup> gitLabGroups = asList(gitLabGroup);
+        final String personalAccessToken = "some-random-token";
 
         when(gitLabGroup.getName()).thenReturn("group-a");
 
-        final boolean member = groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, tokenInfo, gitLabClient, gitLabGroups, groupsFromRole);
+        final boolean member = groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, gitLabGroups, groupsFromRole);
 
         assertTrue(member);
         verifyNoMoreInteractions(gitLabClient);
@@ -73,13 +74,14 @@ public class GroupMembershipCheckerTest {
         final GitLabGroup gitLabGroupB = mock(GitLabGroup.class);
         final List<GitLabGroup> gitLabGroups = asList(gitLabGroupB, gitLabGroupA);
         final MembershipInfo membershipInfo = mock(MembershipInfo.class);
+        final String personalAccessToken = "some-random-token";
 
         when(gitLabGroupA.getName()).thenReturn("group-a");
         when(gitLabGroupB.getName()).thenReturn("group-b");
-        when(gitLabClient.groupMembershipInfo(tokenInfo, gitLabGroupA.getId(), gitLabUser.getId())).thenReturn(membershipInfo);
+        when(gitLabClient.groupMembershipInfo(personalAccessToken, gitLabGroupA.getId(), gitLabUser.getId())).thenReturn(membershipInfo);
         when(membershipInfo.getAccessLevel()).thenReturn(AccessLevel.DEVELOPER);
 
-        final boolean member = groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, tokenInfo, gitLabClient, gitLabGroups, groupsFromRole);
+        final boolean member = groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, gitLabGroups, groupsFromRole);
 
         assertTrue(member);
     }

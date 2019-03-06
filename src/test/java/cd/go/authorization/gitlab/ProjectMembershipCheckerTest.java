@@ -37,6 +37,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ProjectMembershipCheckerTest {
+    public static final String PERSONAL_ACCESS_TOKEN = "some-access-token";
     @Mock
     private GitLabUser gitLabUser;
     @Mock
@@ -59,7 +60,7 @@ public class ProjectMembershipCheckerTest {
 
         when(gitLabProject.getName()).thenReturn("project-duck-simulator");
 
-        final boolean member = projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, tokenInfo, gitLabClient, gitLabProjects, groupsFromRole);
+        final boolean member = projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, PERSONAL_ACCESS_TOKEN, gitLabClient, gitLabProjects, groupsFromRole);
 
         assertTrue(member);
         verifyNoMoreInteractions(gitLabClient);
@@ -75,10 +76,10 @@ public class ProjectMembershipCheckerTest {
 
         when(gitLabProjectA.getName()).thenReturn("project-duck-simulator");
         when(gitLabProjectB.getName()).thenReturn("project-sudoku-solver");
-        when(gitLabClient.projectMembershipInfo(tokenInfo, gitLabProjectA.getId(), gitLabUser.getId())).thenReturn(membershipInfo);
+        when(gitLabClient.projectMembershipInfo(PERSONAL_ACCESS_TOKEN, gitLabProjectA.getId(), gitLabUser.getId())).thenReturn(membershipInfo);
         when(membershipInfo.getAccessLevel()).thenReturn(AccessLevel.DEVELOPER);
 
-        final boolean member = projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, tokenInfo, gitLabClient, gitLabProjects, groupsFromRole);
+        final boolean member = projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, PERSONAL_ACCESS_TOKEN, gitLabClient, gitLabProjects, groupsFromRole);
 
         assertTrue(member);
     }

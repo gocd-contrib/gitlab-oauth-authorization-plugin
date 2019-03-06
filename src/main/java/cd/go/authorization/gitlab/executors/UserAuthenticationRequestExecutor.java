@@ -18,9 +18,9 @@ package cd.go.authorization.gitlab.executors;
 
 import cd.go.authorization.gitlab.GitLabAuthenticator;
 import cd.go.authorization.gitlab.GitLabAuthorizer;
+import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.exceptions.NoAuthorizationConfigurationException;
 import cd.go.authorization.gitlab.models.AuthConfig;
-import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.models.User;
 import cd.go.authorization.gitlab.requests.UserAuthenticationRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
@@ -59,7 +59,7 @@ public class UserAuthenticationRequestExecutor implements RequestExecutor {
         Map<String, Object> userMap = new HashMap<>();
         if (gitLabUser != null) {
             userMap.put("user", new User(gitLabUser));
-            userMap.put("roles", gitLabAuthorizer.authorize(gitLabUser, request.tokenInfo(), authConfig, request.roles()));
+            userMap.put("roles", gitLabAuthorizer.authorize(gitLabUser, authConfig, request.roles()));
         }
 
         DefaultGoPluginApiResponse response = new DefaultGoPluginApiResponse(SUCCESS_RESPONSE_CODE, GSON.toJson(userMap));

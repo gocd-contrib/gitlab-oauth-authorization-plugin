@@ -102,43 +102,48 @@ public class GitLabClient {
         return executeRequest(request, response -> GitLabUser.fromJSON(response.body().string()));
     }
 
-    public List<GitLabGroup> groups(TokenInfo tokenInfo) throws IOException {
-        LOG.info("Fetching gitlab groups for a user.");
-        validateTokenInfo(tokenInfo);
+    public GitLabUser user(String personalAccessToken) throws IOException {
+        LOG.info("Fetching gitlab user profile.");
 
-        final String groupsUrl = apiUrl(gitLabConfiguration.gitLabBaseURL(), tokenInfo.accessToken(), "groups");
-        final Request request = new Request.Builder().url(groupsUrl).build();
+        final String userProfileUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(), "user");
+
+        final Request request = getRequestWithAccessToken(userProfileUrl,personalAccessToken);
+
+        return executeRequest(request, response -> GitLabUser.fromJSON(response.body().string()));
+    }
+
+    public List<GitLabGroup> groups(String personalAccessToken) throws IOException {
+        LOG.info("Fetching gitlab groups for a user.");
+
+        final String groupsUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(),  "groups");
+        final Request request = getRequestWithAccessToken(groupsUrl,personalAccessToken);
 
         return executeRequest(request, response -> GitLabGroup.fromJSONArray(response.body().string()));
     }
 
-    public List<GitLabProject> projects(TokenInfo tokenInfo) throws IOException {
+    public List<GitLabProject> projects(String personalAccessToken) throws IOException {
         LOG.info("Fetching gitlab projects for a user.");
-        validateTokenInfo(tokenInfo);
 
-        final String projectsUrl = apiUrl(gitLabConfiguration.gitLabBaseURL(), tokenInfo.accessToken(), "projects");
-        final Request request = new Request.Builder().url(projectsUrl).build();
+        final String projectsUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(),  "projects");
+        final Request request = getRequestWithAccessToken(projectsUrl,personalAccessToken);
 
         return executeRequest(request, response -> GitLabProject.fromJSONArray(response.body().string()));
     }
 
-    public MembershipInfo groupMembershipInfo(TokenInfo tokenInfo, long groupId, long memberId) throws IOException {
+    public MembershipInfo groupMembershipInfo(String personalAccessToken, long groupId, long memberId) throws IOException {
         LOG.info(format("Fetching group membership info for member `{1}` to a group `{0}`.", groupId, memberId));
-        validateTokenInfo(tokenInfo);
 
-        final String membershipUrl = apiUrl(gitLabConfiguration.gitLabBaseURL(), tokenInfo.accessToken(), toPathArray("groups", groupId, "members", memberId));
-        final Request request = new Request.Builder().url(membershipUrl).build();
+        final String membershipUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(), toPathArray("groups", groupId, "members", memberId));
+        final Request request = getRequestWithAccessToken(membershipUrl, personalAccessToken);
 
         return executeRequest(request, response -> MembershipInfo.fromJSON(response.body().string()));
     }
 
-    public MembershipInfo projectMembershipInfo(TokenInfo tokenInfo, long projectId, long memberId) throws IOException {
+    public MembershipInfo projectMembershipInfo(String personalAccessToken, long projectId, long memberId) throws IOException {
         LOG.info(format("Fetching group membership info for member `{1}` to a project `{0}`.", projectId, memberId));
 
-        final String membershipUrl = apiUrl(gitLabConfiguration.gitLabBaseURL(), tokenInfo.accessToken(), toPathArray("projects", projectId, "members", memberId));
-        final Request request = new Request.Builder().url(membershipUrl).build();
-
-        validateTokenInfo(tokenInfo);
+        final String membershipUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(), toPathArray("projects", projectId, "members", memberId));
+        final Request request = getRequestWithAccessToken(membershipUrl, personalAccessToken);
 
         return executeRequest(request, response -> MembershipInfo.fromJSON(response.body().string()));
     }
@@ -188,5 +193,25 @@ public class GitLabClient {
         }
 
         return builder.build().toString();
+    }
+
+    private String apiUrlWithPersonalAccessToken(String baseURL, String... paths) {
+        final HttpUrl.Builder builder = HttpUrl.parse(baseURL)
+                .newBuilder()
+                .addPathSegment("api")
+                .addPathSegment("v4");
+
+        for (String path : paths) {
+            builder.addPathSegment(path);
+        }
+
+        return builder.build().toString();
+    }
+
+    private Request getRequestWithAccessToken(String url, String personalAccessToken) {
+        return new Request.Builder()
+                .addHeader("Private-Token", personalAccessToken)
+                .url(url)
+                .build();
     }
 }

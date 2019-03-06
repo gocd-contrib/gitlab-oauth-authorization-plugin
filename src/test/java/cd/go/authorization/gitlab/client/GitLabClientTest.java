@@ -38,8 +38,7 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -130,43 +129,47 @@ public class GitLabClientTest {
 
     @Test
     public void shouldFetchGroupsForAUser() throws Exception {
-        final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
+        final String personalAccessToken = "some-random-token";
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(GSON.toJson(asList(new GitLabGroup(1L, "foo-group")))));
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
-        final List<GitLabGroup> gitLabGroups = gitLabClient.groups(tokenInfo);
+        final List<GitLabGroup> gitLabGroups = gitLabClient.groups(personalAccessToken);
 
         assertThat(gitLabGroups, hasSize(1));
         assertThat(gitLabGroups.get(0).getName(), is("foo-group"));
 
         RecordedRequest request = server.takeRequest();
-        assertEquals("GET /api/v4/groups?access_token=token-444248275346-5758603453985735 HTTP/1.1", request.getRequestLine());
+        assertEquals("GET /api/v4/groups HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
     }
 
     @Test
     public void shouldFetchProjectsForAUser() throws Exception {
-        final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
+        final String personalAccessToken = "some-random-token";
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
                 .setBody(GSON.toJson(asList(new GitLabProject(1L, "foo-project")))));
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
-        final List<GitLabProject> gitLabProjects = gitLabClient.projects(tokenInfo);
+        final List<GitLabProject> gitLabProjects = gitLabClient.projects(personalAccessToken);
 
         assertThat(gitLabProjects, hasSize(1));
         assertThat(gitLabProjects.get(0).getName(), is("foo-project"));
 
         RecordedRequest request = server.takeRequest();
-        assertEquals("GET /api/v4/projects?access_token=token-444248275346-5758603453985735 HTTP/1.1", request.getRequestLine());
+        assertEquals("GET /api/v4/projects HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
     }
 
     @Test
     public void shouldFetchGroupMembershipForAUser() throws Exception {
-        final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
+        final String personalAccessToken = "some-random-token";
 
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -174,18 +177,20 @@ public class GitLabClientTest {
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
-        final MembershipInfo membershipInfo = gitLabClient.groupMembershipInfo(tokenInfo, 1L, 1L);
+        final MembershipInfo membershipInfo = gitLabClient.groupMembershipInfo(personalAccessToken, 1L, 1L);
 
         assertThat(membershipInfo.getUsername(), is("foo-user"));
         assertThat(membershipInfo.getAccessLevel(), is(AccessLevel.DEVELOPER));
 
         RecordedRequest request = server.takeRequest();
-        assertEquals("GET /api/v4/groups/1/members/1?access_token=token-444248275346-5758603453985735 HTTP/1.1", request.getRequestLine());
+        assertEquals("GET /api/v4/groups/1/members/1 HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
     }
 
     @Test
     public void shouldFetchProjectMembershipForAUser() throws Exception {
-        final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
+        final String personalAccessToken = "some-random-token";
 
         server.enqueue(new MockResponse()
                 .setResponseCode(200)
@@ -193,13 +198,15 @@ public class GitLabClientTest {
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
-        final MembershipInfo membershipInfo = gitLabClient.projectMembershipInfo(tokenInfo, 1L, 1L);
+        final MembershipInfo membershipInfo = gitLabClient.projectMembershipInfo(personalAccessToken, 1L, 1L);
 
         assertThat(membershipInfo.getUsername(), is("foo-user"));
         assertThat(membershipInfo.getAccessLevel(), is(AccessLevel.DEVELOPER));
 
         RecordedRequest request = server.takeRequest();
-        assertEquals("GET /api/v4/projects/1/members/1?access_token=token-444248275346-5758603453985735 HTTP/1.1", request.getRequestLine());
+        assertEquals("GET /api/v4/projects/1/members/1 HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
     }
 
     @Test

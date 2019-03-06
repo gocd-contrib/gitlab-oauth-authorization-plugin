@@ -36,7 +36,10 @@ public enum RequestFromServer {
     REQUEST_SEARCH_USERS(Constants.REQUEST_PREFIX + ".search-users"),
 
     REQUEST_AUTHORIZATION_SERVER_REDIRECT_URL(Constants.REQUEST_PREFIX + ".authorization-server-url"),
-    REQUEST_ACCESS_TOKEN(Constants.REQUEST_PREFIX + ".fetch-access-token");
+    REQUEST_ACCESS_TOKEN(Constants.REQUEST_PREFIX + ".fetch-access-token"),
+
+    REQUEST_GET_USER_ROLES(String.join(".", Constants.REQUEST_PREFIX, "get-user-roles")),
+    REQUEST_IS_VALID_USER(String.join(".", Constants.REQUEST_PREFIX, "is-valid-user"));
 
     private final String requestName;
 

@@ -33,8 +33,7 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class GitLabAuthorizerTest {
     private GroupMembershipChecker groupMembershipChecker;
@@ -72,7 +71,7 @@ public class GitLabAuthorizerTest {
         when(gitLabUser.getUsername()).thenReturn("bob");
         when(gitLabRole.name()).thenReturn("admin");
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, tokenInfo, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
         assertThat(roles, hasSize(1));
         assertThat(roles, contains("admin"));
@@ -84,14 +83,16 @@ public class GitLabAuthorizerTest {
         final GitLabRoleConfiguration gitLabRoleConfiguration = mock(GitLabRoleConfiguration.class);
         final List<GitLabGroup> gitLabGroups = asList(mock(GitLabGroup.class));
         final Map<String, List<String>> groups = singletonMap("group-a", emptyList());
+        final String personalAccessToken = "some-random-token";
 
-        when(gitLabClient.groups(tokenInfo)).thenReturn(gitLabGroups);
+        when(gitLabClient.groups(personalAccessToken)).thenReturn(gitLabGroups);
         when(gitLabRole.name()).thenReturn("admin");
         when(gitLabRole.roleConfiguration()).thenReturn(gitLabRoleConfiguration);
+        when(authConfig.gitLabConfiguration().personalAccessToken()).thenReturn(personalAccessToken);
         when(gitLabRoleConfiguration.groups()).thenReturn(groups);
-        when(groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, tokenInfo, gitLabClient, gitLabGroups, groups)).thenReturn(true);
+        when(groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, gitLabGroups, groups)).thenReturn(true);
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, tokenInfo, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
         assertThat(roles, hasSize(1));
         assertThat(roles, contains("admin"));
@@ -104,17 +105,20 @@ public class GitLabAuthorizerTest {
         final List<GitLabGroup> gitLabGroups = asList(mock(GitLabGroup.class));
         final List<GitLabProject> gitLabProjects = asList(mock(GitLabProject.class));
         final Map<String, List<String>> projects = singletonMap("project-foo", emptyList());
+        final String personalAccessToken = "some-random-token";
 
-        when(gitLabClient.projects(tokenInfo)).thenReturn(gitLabProjects);
+        when(gitLabClient.projects(personalAccessToken)).thenReturn(gitLabProjects);
         when(gitLabRole.name()).thenReturn("admin");
         when(gitLabRole.roleConfiguration()).thenReturn(gitLabRoleConfiguration);
+        when(authConfig.gitLabConfiguration().personalAccessToken()).thenReturn(personalAccessToken);
         when(gitLabRoleConfiguration.projects()).thenReturn(projects);
-        when(groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, tokenInfo, gitLabClient, gitLabGroups, gitLabRoleConfiguration.groups())).thenReturn(false);
+        when(groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, gitLabGroups, gitLabRoleConfiguration.groups())).thenReturn(false);
 
-        when(projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, tokenInfo, gitLabClient, gitLabProjects, projects)).thenReturn(true);
+        when(projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, personalAccessToken, gitLabClient, gitLabProjects, projects)).thenReturn(true);
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, tokenInfo, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
+        verify(projectMembershipChecker).memberOfAtLeastOneProject(any(), anyString(), any(), anyList(), anyMap());
         assertThat(roles, hasSize(1));
         assertThat(roles, contains("admin"));
     }

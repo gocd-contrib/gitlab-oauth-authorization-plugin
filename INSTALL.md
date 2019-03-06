@@ -35,6 +35,27 @@ on Windows.
 7. Note down the `Application ID` and `Secret` of your application.
 !["GitLab application info"][5]
 
+### Create Personal Access Token
+
+1. Login into your GitLab/GitLab Enterprise account
+2. Navigate to **_Settings_**
+!["GitLab settings"][1]
+
+3. Click on **Access Tokens**
+!["GitLab access tokens"][7]
+
+4. Fill the following details for access token
+    - Give a name to your token
+    - In scopes, select `api` and `read_user`
+
+    !["Fill access token detail"][8]
+
+5. Click **Save token**.
+!["Save token"][9]
+
+6. Note down the `Token Value`.
+![GitLab personal access token info][10]
+
 ### Create Authorization Configuration
 
 1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Security_** _>_ **_Authorization Configuration_**
@@ -43,7 +64,8 @@ on Windows.
     2. Select `GitLab OAuth authorization plugin` for **_Plugin id_**
     3. Choose `GitLab` or `GitLab Enterprise` for `Authenticate with`.
     4. Specify **_Application ID_** and **_Client Secret_**
-    5. Save your configuration
+    5. Specify **_Token Value_**
+    6. Save your configuration
     
     ![Create authorization configuration][6]
 
@@ -52,4 +74,8 @@ on Windows.
 [3]: images/fill_application_details.png   "Fill application details"
 [4]: images/save_application.png   "Save application"
 [5]: images/application_info.png   "GitLab application info"
-[6]: images/gitlab-auth-config.gif   "Create authorization configuration"
+[6]: images/gocd_auth_config.gif  "Create authorization configuration"
+[7]: images/nav_access_tokens.png "GitLab Access Tokens"
+[8]: images/fill_access_token_details.png "Fill access token details"
+[9]: images/save_token.png "Save token"
+[10]: images/token_info.png "GitLab personal accesss token info"

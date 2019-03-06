@@ -22,7 +22,6 @@ import cd.go.authorization.gitlab.client.models.GitLabProject;
 import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.GitLabRole;
-import cd.go.authorization.gitlab.models.TokenInfo;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -45,7 +44,7 @@ public class GitLabAuthorizer {
         this.projectMembershipChecker = projectMembershipChecker;
     }
 
-    public List<String> authorize(GitLabUser gitLabUser, TokenInfo tokenInfo, AuthConfig authConfig, List<GitLabRole> roles) throws IOException {
+    public List<String> authorize(GitLabUser gitLabUser, AuthConfig authConfig, List<GitLabRole> roles) throws IOException {
         if (roles == null || roles.isEmpty()) {
             return Collections.emptyList();
         }
@@ -60,20 +59,21 @@ public class GitLabAuthorizer {
         }
 
         final GitLabClient gitLabClient = authConfig.gitLabConfiguration().gitLabClient();
-        final List<GitLabGroup> groupsFromGitLab = gitLabClient.groups(tokenInfo);
-        final List<GitLabProject> projectsFromGitLab = gitLabClient.projects(tokenInfo);
+        String personalAccessToken = authConfig.gitLabConfiguration().personalAccessToken();
+        final List<GitLabGroup> groupsFromGitLab = gitLabClient.groups(personalAccessToken);
+        final List<GitLabProject> projectsFromGitLab = gitLabClient.projects(personalAccessToken);
 
         for (GitLabRole role : remainingRoles) {
             final Map<String, List<String>> groupsFromRole = role.roleConfiguration().groups();
 
-            if (groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, tokenInfo, gitLabClient, groupsFromGitLab, groupsFromRole)) {
+            if (groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, groupsFromGitLab, groupsFromRole)) {
                 assignedRoles.add(role.name());
                 continue;
             }
 
             final Map<String, List<String>> projectsFromRole = role.roleConfiguration().projects();
 
-            if (projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, tokenInfo, gitLabClient, projectsFromGitLab, projectsFromRole)) {
+            if (projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, personalAccessToken, gitLabClient, projectsFromGitLab, projectsFromRole)) {
                 assignedRoles.add(role.name());
             }
         }

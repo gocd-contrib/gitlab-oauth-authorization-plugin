@@ -20,7 +20,6 @@ import cd.go.authorization.gitlab.client.GitLabClient;
 import cd.go.authorization.gitlab.client.models.GitLabGroup;
 import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.client.models.MembershipInfo;
-import cd.go.authorization.gitlab.models.TokenInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ import static java.text.MessageFormat.format;
 
 public class GroupMembershipChecker {
 
-    public boolean memberOfAtLeastOneGroup(GitLabUser gitLabUser, TokenInfo tokenInfo, GitLabClient gitLabClient, List<GitLabGroup> groupsFromGitLabForAUser, Map<String, List<String>> groupsFromRole) throws IOException {
+    public boolean memberOfAtLeastOneGroup(GitLabUser gitLabUser, String personalAccessToken, GitLabClient gitLabClient, List<GitLabGroup> groupsFromGitLabForAUser, Map<String, List<String>> groupsFromRole) throws IOException {
         final List<GitLabGroup> matchingGroups = filterGroupBasedOnRoleConfiguration(groupsFromGitLabForAUser, groupsFromRole);
 
         for (GitLabGroup gitLabGroup : matchingGroups) {
@@ -43,7 +42,7 @@ public class GroupMembershipChecker {
                 return true;
             }
 
-            final MembershipInfo membershipInfo = gitLabClient.groupMembershipInfo(tokenInfo, gitLabGroup.getId(), gitLabUser.getId());
+            final MembershipInfo membershipInfo = gitLabClient.groupMembershipInfo(personalAccessToken, gitLabGroup.getId(), gitLabUser.getId());
 
             if (membershipInfo.getAccessLevel() != null && accessLevels.contains(membershipInfo.getAccessLevel().toString().toLowerCase())) {
                 LOG.info(format("User `{0}` is member of `{1}` group with access level `{2}`.", gitLabUser.getUsername(), gitLabGroup.getName(), membershipInfo.getAccessLevel()));
