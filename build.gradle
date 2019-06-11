@@ -19,7 +19,7 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.authorization.gitlab'
-  pluginVersion = '2.0.0'
+  pluginVersion = '2.0.1'
   goCdVersion = '19.2.0'
   name = 'GitLab OAuth authorization plugin'
   description = 'GitLab OAuth authorization plugin for GoCD'
