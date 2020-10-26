@@ -126,7 +126,7 @@ public class GitLabClient {
         final String groupsUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(),  "groups");
         final Request request = getRequestWithAccessToken(groupsUrl,personalAccessToken);
 
-        return executeRequest(request, response -> GitLabGroup.fromJSONArray(response.body().string()));
+        return executeRequestRepeated(request, response -> GitLabGroup.fromJSONArray(response.body().string()));
     }
 
     public List<GitLabProject> projects(String personalAccessToken) throws IOException {
@@ -135,7 +135,7 @@ public class GitLabClient {
         final String projectsUrl = apiUrlWithPersonalAccessToken(gitLabConfiguration.gitLabBaseURL(),  "projects");
         final Request request = getRequestWithAccessToken(projectsUrl,personalAccessToken);
 
-        return executeRequest(request, response -> GitLabProject.fromJSONArray(response.body().string()));
+        return executeRequestRepeated(request, response -> GitLabProject.fromJSONArray(response.body().string()));
     }
 
     public MembershipInfo groupMembershipInfo(String personalAccessToken, long groupId, long memberId) throws IOException {
@@ -181,6 +181,42 @@ public class GitLabClient {
         }
 
         return callback.onResponse(response);
+    }
+
+    /**
+     * Repeatedly execute the request until all pages are loaded
+     */
+    private <E, T extends List<E>> List<E> executeRequestRepeated(Request request, Callback<T> callback) throws IOException {
+        HttpUrl originalUrl = request.url();
+        List<E> result = new ArrayList<>();
+        do {
+            final Response response = httpClient.newCall(request).execute();
+
+            if (!response.isSuccessful()) {
+                final String responseBody = response.body().string();
+                final String errorMessage = isNotBlank(responseBody) ? responseBody : response.message();
+                throw new RuntimeException(format(API_ERROR_MSG, request.url().encodedPath(), errorMessage));
+            }
+
+            result.addAll(callback.onResponse(response));
+
+            // Check if there are more pages to load
+            String nextPage = response.header("x-next-page");
+            if (nextPage != null && !nextPage.trim().isEmpty()) {
+                HttpUrl url = originalUrl
+                        .newBuilder()
+                        .addQueryParameter("page", nextPage.trim())
+                        .build();
+                request = request
+                        .newBuilder()
+                        .url(url)
+                        .build();
+                continue;
+            }
+            break;
+        } while (true);
+
+        return result;
     }
 
     private void validateTokenInfo(TokenInfo tokenInfo) {

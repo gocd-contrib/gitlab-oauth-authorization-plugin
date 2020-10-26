@@ -161,6 +161,33 @@ public class GitLabClientTest {
     }
 
     @Test
+    public void shouldFetchPagedGroupsForAUser() throws Exception {
+        final String personalAccessToken = "some-random-token";
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("x-next-page", "2")
+                .setBody(GSON.toJson(asList(new GitLabGroup(1L, "foo-group")))));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("x-next-page", "")
+                .setBody(GSON.toJson(asList(new GitLabGroup(2L, "bar-group")))));
+
+        when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
+
+        final List<GitLabGroup> gitLabGroups = gitLabClient.groups(personalAccessToken);
+
+        assertThat(gitLabGroups, hasSize(2));
+        assertThat(gitLabGroups.get(0).getName(), is("foo-group"));
+        assertThat(gitLabGroups.get(1).getName(), is("bar-group"));
+
+        RecordedRequest request = server.takeRequest();
+        assertEquals("GET /api/v4/groups HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
+    }
+
+
+    @Test
     public void shouldFetchProjectsForAUser() throws Exception {
         final String personalAccessToken = "some-random-token";
         server.enqueue(new MockResponse.Builder()
@@ -180,6 +207,34 @@ public class GitLabClientTest {
         assertNotNull(request.getHeaders().get("Private-Token"));
         assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
     }
+
+    @Test
+    public void shouldFetchPagedProjectsForAUser() throws Exception {
+        final String personalAccessToken = "some-random-token";
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("x-next-page", "2")
+                .setBody(GSON.toJson(asList(new GitLabProject(1L, "foo-project")))));
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .addHeader("x-next-page", "")
+                .setBody(GSON.toJson(asList(new GitLabProject(2L, "bar-project")))));
+
+
+        when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
+
+        final List<GitLabProject> gitLabProjects = gitLabClient.projects(personalAccessToken);
+
+        assertThat(gitLabProjects, hasSize(2));
+        assertThat(gitLabProjects.get(0).getName(), is("foo-project"));
+        assertThat(gitLabProjects.get(1).getName(), is("bar-project"));
+
+        RecordedRequest request = server.takeRequest();
+        assertEquals("GET /api/v4/projects HTTP/1.1", request.getRequestLine());
+        assertNotNull(request.getHeaders().get("Private-Token"));
+        assertEquals(personalAccessToken, request.getHeaders().get("Private-Token"));
+    }
+
 
     @Test
     public void shouldFetchGroupMembershipForAUser() throws Exception {
