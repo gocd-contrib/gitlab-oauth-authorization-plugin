@@ -19,8 +19,8 @@ apply from: "https://raw.githubusercontent.com/gocd/gocd-plugin-gradle-task-help
 
 gocdPlugin {
   id = 'cd.go.authorization.gitlab'
-  pluginVersion = '2.0.1'
-  goCdVersion = '19.2.0'
+  pluginVersion = '2.1.0'
+  goCdVersion = '20.9.0'
   name = 'GitLab OAuth authorization plugin'
   description = 'GitLab OAuth authorization plugin for GoCD'
   vendorName = 'ThoughtWorks, Inc.'
@@ -37,8 +37,6 @@ gocdPlugin {
   prerelease = !"No".equalsIgnoreCase(System.getenv('PRERELEASE'))
   assetsToRelease = [project.tasks.jar]
 }
-
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
