@@ -13,6 +13,11 @@ on Windows.
 
 ## Configuration
 
+###  Check GoCD server site urls
+
+1. Login to `GoCD server` as admin and navigate to **_Admin_** _>_ **_Server Configuration_** _>_ **_Server Configuration_**
+2. Check both server site urls for HTTP and HTTPS. If one of these fields is empty, it could lead to HTTP 500 error on GitLab OAuth login.
+
 ###  Create GitLab OAuth application
 
 1. Login into your GitLab/GitLab Enterprise account
