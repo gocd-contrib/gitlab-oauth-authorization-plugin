@@ -35,7 +35,7 @@ import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class GetAuthorizationServerUrlRequestExecutorTest {
 
@@ -50,7 +50,7 @@ public class GetAuthorizationServerUrlRequestExecutorTest {
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
+        openMocks(this);
 
         executor = new GetAuthorizationServerUrlRequestExecutor(request);
     }

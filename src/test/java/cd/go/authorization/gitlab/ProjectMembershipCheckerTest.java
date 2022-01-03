@@ -34,7 +34,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 public class ProjectMembershipCheckerTest {
     public static final String PERSONAL_ACCESS_TOKEN = "some-access-token";
@@ -48,7 +48,7 @@ public class ProjectMembershipCheckerTest {
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
+        openMocks(this);
         projectMembershipChecker = new ProjectMembershipChecker();
     }
 
