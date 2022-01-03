@@ -18,13 +18,12 @@ package cd.go.authorization.gitlab.requests;
 
 import cd.go.authorization.gitlab.models.GitLabRoleConfiguration;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -33,7 +32,7 @@ public class RoleConfigValidateRequestTest {
     @Mock
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
     }
@@ -50,6 +49,6 @@ public class RoleConfigValidateRequestTest {
         final RoleConfigValidateRequest request = RoleConfigValidateRequest.from(apiRequest);
         final GitLabRoleConfiguration gitLabRoleConfiguration = request.gitLabRoleConfiguration();
 
-        assertThat(gitLabRoleConfiguration.groups(), hasEntry("group-1", asList("guest", "owner")));
+        assertThat(gitLabRoleConfiguration.groups()).containsEntry("group-1", asList("guest", "owner"));
     }
 }

@@ -24,23 +24,18 @@ import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.TokenInfo;
 import cd.go.authorization.gitlab.requests.UserAuthenticationRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collections;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class UserAuthenticationRequestExecutorTest {
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     private UserAuthenticationRequest request;
     private AuthConfig authConfig;
 
@@ -48,7 +43,7 @@ public class UserAuthenticationRequestExecutorTest {
     private GitLabAuthenticator authenticator;
     private GitLabAuthorizer authorizer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         request = mock(UserAuthenticationRequest.class);
         authConfig = mock(AuthConfig.class);
@@ -62,10 +57,10 @@ public class UserAuthenticationRequestExecutorTest {
     public void shouldErrorOutIfAuthConfigIsNotProvided() throws Exception {
         when(request.authConfigs()).thenReturn(Collections.emptyList());
 
-        thrown.expect(NoAuthorizationConfigurationException.class);
-        thrown.expectMessage("[Authenticate] No authorization configuration found.");
+        assertThatThrownBy(() -> executor.execute())
+                .isInstanceOf(NoAuthorizationConfigurationException.class)
+                .hasMessage("[Authenticate] No authorization configuration found.");
 
-        executor.execute();
     }
 
     @Test
@@ -91,7 +86,7 @@ public class UserAuthenticationRequestExecutorTest {
                 "  }\n" +
                 "}";
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);
     }
 }

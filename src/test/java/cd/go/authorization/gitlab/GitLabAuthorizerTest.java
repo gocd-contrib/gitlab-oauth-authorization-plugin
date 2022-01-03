@@ -21,8 +21,8 @@ import cd.go.authorization.gitlab.client.models.GitLabGroup;
 import cd.go.authorization.gitlab.client.models.GitLabProject;
 import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.models.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
@@ -30,9 +30,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class GitLabAuthorizerTest {
@@ -45,7 +43,7 @@ public class GitLabAuthorizerTest {
     private GitLabClient gitLabClient;
     private ProjectMembershipChecker projectMembershipChecker;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         groupMembershipChecker = mock(GroupMembershipChecker.class);
         gitLabUser = mock(GitLabUser.class);
@@ -73,8 +71,8 @@ public class GitLabAuthorizerTest {
 
         final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
-        assertThat(roles, hasSize(1));
-        assertThat(roles, contains("admin"));
+        assertThat(roles).hasSize(1);
+        assertThat(roles).contains("admin");
     }
 
     @Test
@@ -94,8 +92,8 @@ public class GitLabAuthorizerTest {
 
         final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
-        assertThat(roles, hasSize(1));
-        assertThat(roles, contains("admin"));
+        assertThat(roles).hasSize(1);
+        assertThat(roles).contains("admin");
     }
 
     @Test
@@ -119,8 +117,8 @@ public class GitLabAuthorizerTest {
         final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
 
         verify(projectMembershipChecker).memberOfAtLeastOneProject(any(), anyString(), any(), anyList(), anyMap());
-        assertThat(roles, hasSize(1));
-        assertThat(roles, contains("admin"));
+        assertThat(roles).hasSize(1);
+        assertThat(roles).contains("admin");
     }
 
 }

@@ -21,43 +21,39 @@ import cd.go.authorization.gitlab.client.models.*;
 import cd.go.authorization.gitlab.models.AuthenticateWith;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.models.TokenInfo;
-import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.MockWebServer;
-import okhttp3.mockwebserver.RecordedRequest;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import mockwebserver3.RecordedRequest;
+import mockwebserver3.junit5.internal.MockWebServerExtension;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
 import java.util.List;
 
 import static cd.go.authorization.gitlab.utils.Util.GSON;
 import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.startsWith;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
+@ExtendWith(MockWebServerExtension.class)
 public class GitLabClientTest {
 
     @Mock
     private GitLabConfiguration gitLabConfiguration;
-    private MockWebServer server;
     private GitLabClient gitLabClient;
 
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    private MockWebServer server;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp(MockWebServer server) throws Exception {
+        this.server = server;
         openMocks(this);
-
-        server = new MockWebServer();
-        server.start();
 
         when(gitLabConfiguration.applicationId()).thenReturn("client-id");
         when(gitLabConfiguration.clientSecret()).thenReturn("client-secret");
@@ -69,16 +65,11 @@ public class GitLabClientTest {
         gitLabClient = new GitLabClient(gitLabConfiguration);
     }
 
-    @After
-    public void tearDown() throws Exception {
-        server.shutdown();
-    }
-
     @Test
     public void shouldReturnAuthorizationServerUrlForGitLab() throws Exception {
         final String authorizationServerUrl = gitLabClient.authorizationServerUrl("call-back-url");
 
-        assertThat(authorizationServerUrl, startsWith("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state="));
+        assertThat(authorizationServerUrl).startsWith("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=");
     }
 
     @Test
@@ -88,7 +79,7 @@ public class GitLabClientTest {
 
         final String authorizationServerUrl = gitLabClient.authorizationServerUrl("call-back-url");
 
-        assertThat(authorizationServerUrl, startsWith("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state="));
+        assertThat(authorizationServerUrl).startsWith("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=");
     }
 
     @Test
@@ -102,7 +93,7 @@ public class GitLabClientTest {
         final TokenInfo tokenInfo = gitLabClient.fetchAccessToken("code");
 
 
-        assertThat(tokenInfo.accessToken(), is("token-444248275346-5758603453985735"));
+        assertThat(tokenInfo.accessToken()).isEqualTo("token-444248275346-5758603453985735");
 
         RecordedRequest request = server.takeRequest();
         assertEquals("POST /oauth/token HTTP/1.1", request.getRequestLine());
@@ -121,7 +112,7 @@ public class GitLabClientTest {
 
         final GitLabUser gitLabUser = gitLabClient.user(tokenInfo);
 
-        assertThat(gitLabUser.getUsername(), is("username"));
+        assertThat(gitLabUser.getUsername()).isEqualTo("username");
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /api/v4/user?access_token=token-444248275346-5758603453985735 HTTP/1.1", request.getRequestLine());
@@ -138,8 +129,8 @@ public class GitLabClientTest {
 
         final List<GitLabGroup> gitLabGroups = gitLabClient.groups(personalAccessToken);
 
-        assertThat(gitLabGroups, hasSize(1));
-        assertThat(gitLabGroups.get(0).getName(), is("foo-group"));
+        assertThat(gitLabGroups).hasSize(1);
+        assertThat(gitLabGroups.get(0).getName()).isEqualTo("foo-group");
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /api/v4/groups HTTP/1.1", request.getRequestLine());
@@ -158,8 +149,8 @@ public class GitLabClientTest {
 
         final List<GitLabProject> gitLabProjects = gitLabClient.projects(personalAccessToken);
 
-        assertThat(gitLabProjects, hasSize(1));
-        assertThat(gitLabProjects.get(0).getName(), is("foo-project"));
+        assertThat(gitLabProjects).hasSize(1);
+        assertThat(gitLabProjects.get(0).getName()).isEqualTo("foo-project");
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /api/v4/projects HTTP/1.1", request.getRequestLine());
@@ -179,8 +170,8 @@ public class GitLabClientTest {
 
         final MembershipInfo membershipInfo = gitLabClient.groupMembershipInfo(personalAccessToken, 1L, 1L);
 
-        assertThat(membershipInfo.getUsername(), is("foo-user"));
-        assertThat(membershipInfo.getAccessLevel(), is(AccessLevel.DEVELOPER));
+        assertThat(membershipInfo.getUsername()).isEqualTo("foo-user");
+        assertThat(membershipInfo.getAccessLevel()).isEqualTo(AccessLevel.DEVELOPER);
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /api/v4/groups/1/members/1 HTTP/1.1", request.getRequestLine());
@@ -200,8 +191,8 @@ public class GitLabClientTest {
 
         final MembershipInfo membershipInfo = gitLabClient.projectMembershipInfo(personalAccessToken, 1L, 1L);
 
-        assertThat(membershipInfo.getUsername(), is("foo-user"));
-        assertThat(membershipInfo.getAccessLevel(), is(AccessLevel.DEVELOPER));
+        assertThat(membershipInfo.getUsername()).isEqualTo("foo-user");
+        assertThat(membershipInfo.getAccessLevel()).isEqualTo(AccessLevel.DEVELOPER);
 
         RecordedRequest request = server.takeRequest();
         assertEquals("GET /api/v4/projects/1/members/1 HTTP/1.1", request.getRequestLine());
@@ -217,9 +208,8 @@ public class GitLabClientTest {
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage("Api call to `/api/v4/user` failed with error: `Unauthorized`");
-
-        gitLabClient.user(tokenInfo);
+        assertThatThrownBy(() -> gitLabClient.user(tokenInfo))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Api call to `/api/v4/user` failed with error: `Unauthorized`");
     }
 }

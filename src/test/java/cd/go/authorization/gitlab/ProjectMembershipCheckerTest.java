@@ -22,8 +22,8 @@ import cd.go.authorization.gitlab.client.models.GitLabProject;
 import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.client.models.MembershipInfo;
 import cd.go.authorization.gitlab.models.TokenInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -46,7 +46,7 @@ public class ProjectMembershipCheckerTest {
     private GitLabClient gitLabClient;
     private ProjectMembershipChecker projectMembershipChecker;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
         projectMembershipChecker = new ProjectMembershipChecker();

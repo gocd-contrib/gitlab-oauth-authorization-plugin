@@ -20,14 +20,11 @@ import cd.go.authorization.gitlab.executors.UserAuthenticationRequestExecutor;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.TokenInfo;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -35,7 +32,7 @@ public class UserAuthenticationRequestTest {
     @Mock
     private GoPluginApiRequest request;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
     }
@@ -65,23 +62,23 @@ public class UserAuthenticationRequestTest {
 
         final UserAuthenticationRequest request = UserAuthenticationRequest.from(this.request);
 
-        assertThat(request.authConfigs(), hasSize(1));
-        assertThat(request.executor(), instanceOf(UserAuthenticationRequestExecutor.class));
+        assertThat(request.authConfigs()).hasSize(1);
+        assertThat(request.executor()).isInstanceOf(UserAuthenticationRequestExecutor.class);
 
         assertAuthConfig(request.authConfigs().get(0));
         assertTokenInfo(request.tokenInfo());
     }
 
     private void assertTokenInfo(TokenInfo tokenInfo) {
-        assertThat(tokenInfo.accessToken(), is("access-token"));
-        assertThat(tokenInfo.tokenType(), is("token"));
-        assertThat(tokenInfo.expiresIn(), is(7200));
-        assertThat(tokenInfo.refreshToken(), is("refresh-token"));
+        assertThat(tokenInfo.accessToken()).isEqualTo("access-token");
+        assertThat(tokenInfo.tokenType()).isEqualTo("token");
+        assertThat(tokenInfo.expiresIn()).isEqualTo(7200);
+        assertThat(tokenInfo.refreshToken()).isEqualTo("refresh-token");
     }
 
     private void assertAuthConfig(AuthConfig authConfig) {
-        assertThat(authConfig.getId(), is("gitlab-config"));
-        assertThat(authConfig.gitLabConfiguration().applicationId(), is("client-id"));
-        assertThat(authConfig.gitLabConfiguration().clientSecret(), is("client-secret"));
+        assertThat(authConfig.getId()).isEqualTo("gitlab-config");
+        assertThat(authConfig.gitLabConfiguration().applicationId()).isEqualTo("client-id");
+        assertThat(authConfig.gitLabConfiguration().clientSecret()).isEqualTo("client-secret");
     }
 }

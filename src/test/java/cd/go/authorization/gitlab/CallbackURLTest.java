@@ -16,10 +16,9 @@
 
 package cd.go.authorization.gitlab;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class CallbackURLTest {
     @Test
@@ -28,6 +27,6 @@ public class CallbackURLTest {
 
         instance.updateRedirectURL("Foo");
 
-        assertThat(instance.getCallbackURL(), is("Foo"));
+        assertThat(instance.getCallbackURL()).isEqualTo("Foo");
     }
 }

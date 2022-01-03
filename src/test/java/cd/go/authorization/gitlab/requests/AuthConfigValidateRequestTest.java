@@ -18,12 +18,11 @@ package cd.go.authorization.gitlab.requests;
 
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -31,7 +30,7 @@ public class AuthConfigValidateRequestTest {
     @Mock
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
     }
@@ -49,7 +48,7 @@ public class AuthConfigValidateRequestTest {
         final AuthConfigValidateRequest request = AuthConfigValidateRequest.from(apiRequest);
         final GitLabConfiguration gitLabConfiguration = request.gitLabConfiguration();
 
-        assertThat(gitLabConfiguration.applicationId(), is("client-id"));
-        assertThat(gitLabConfiguration.clientSecret(), is("client-secret"));
+        assertThat(gitLabConfiguration.applicationId()).isEqualTo("client-id");
+        assertThat(gitLabConfiguration.clientSecret()).isEqualTo("client-secret");
     }
 }

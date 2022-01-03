@@ -21,11 +21,10 @@ import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.models.TokenInfo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +36,7 @@ public class GitLabAuthenticatorTest {
     private TokenInfo tokenInfo;
     private GitLabClient gitLabClient;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         authConfig = mock(AuthConfig.class);
         gitLabConfiguration = mock(GitLabConfiguration.class);
@@ -56,6 +55,6 @@ public class GitLabAuthenticatorTest {
 
         final GitLabUser user = authenticator.authenticate(tokenInfo, authConfig);
 
-        assertThat(user, is(new GitLabUser("username", "DisplayName", "email")));
+        assertThat(user).isEqualTo(new GitLabUser("username", "DisplayName", "email"));
     }
 }

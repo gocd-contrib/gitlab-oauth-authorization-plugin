@@ -19,14 +19,11 @@ package cd.go.authorization.gitlab.requests;
 import cd.go.authorization.gitlab.executors.GetAuthorizationServerUrlRequestExecutor;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -34,7 +31,7 @@ public class GetAuthorizationServerUrlRequestTest {
     @Mock
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
     }
@@ -59,16 +56,16 @@ public class GetAuthorizationServerUrlRequestTest {
 
         final GetAuthorizationServerUrlRequest request = GetAuthorizationServerUrlRequest.from(apiRequest);
 
-        assertThat(request.authConfigs(), hasSize(1));
-        assertThat(request.executor(), instanceOf(GetAuthorizationServerUrlRequestExecutor.class));
+        assertThat(request.authConfigs()).hasSize(1);
+        assertThat(request.executor()).isInstanceOf(GetAuthorizationServerUrlRequestExecutor.class);
 
         final AuthConfig authConfig = request.authConfigs().get(0);
 
-        assertThat(request.callbackUrl(), is("https://redirect.url"));
+        assertThat(request.callbackUrl()).isEqualTo("https://redirect.url");
 
-        assertThat(authConfig.getId(), is("gitlab-config"));
-        assertThat(authConfig.gitLabConfiguration().applicationId(), is("client-id"));
-        assertThat(authConfig.gitLabConfiguration().clientSecret(), is("client-secret"));
+        assertThat(authConfig.getId()).isEqualTo("gitlab-config");
+        assertThat(authConfig.gitLabConfiguration().applicationId()).isEqualTo("client-id");
+        assertThat(authConfig.gitLabConfiguration().clientSecret()).isEqualTo("client-secret");
 
     }
 }

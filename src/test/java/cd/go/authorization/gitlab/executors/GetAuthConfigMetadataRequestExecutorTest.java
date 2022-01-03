@@ -20,14 +20,13 @@ import cd.go.authorization.gitlab.annotation.MetadataHelper;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetAuthConfigMetadataRequestExecutorTest {
 
@@ -42,7 +41,7 @@ public class GetAuthConfigMetadataRequestExecutorTest {
     public void assertJsonStructure() throws Exception {
         GoPluginApiResponse response = new GetAuthConfigMetadataRequestExecutor().execute();
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         String expectedJSON = "[\n" +
                 "  {\n" +
                 "    \"key\": \"ApplicationId\",\n" +

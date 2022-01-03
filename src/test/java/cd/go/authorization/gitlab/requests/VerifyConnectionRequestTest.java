@@ -20,13 +20,11 @@ import cd.go.authorization.gitlab.executors.VerifyConnectionRequestExecutor;
 import cd.go.authorization.gitlab.models.AuthenticateWith;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -34,7 +32,7 @@ public class VerifyConnectionRequestTest {
     @Mock
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
     }
@@ -53,12 +51,12 @@ public class VerifyConnectionRequestTest {
         final VerifyConnectionRequest request = VerifyConnectionRequest.from(apiRequest);
         final GitLabConfiguration gitLabConfiguration = request.gitLabConfiguration();
 
-        assertThat(request.executor(), instanceOf(VerifyConnectionRequestExecutor.class));
+        assertThat(request.executor()).isInstanceOf(VerifyConnectionRequestExecutor.class);
 
-        assertThat(gitLabConfiguration.applicationId(), is("client-id"));
-        assertThat(gitLabConfiguration.clientSecret(), is("client-secret"));
-        assertThat(gitLabConfiguration.authenticateWith(), is(AuthenticateWith.GITLAB_ENTERPRISE));
-        assertThat(gitLabConfiguration.gitLabEnterpriseUrl(), is("my-enterprise-url"));
+        assertThat(gitLabConfiguration.applicationId()).isEqualTo("client-id");
+        assertThat(gitLabConfiguration.clientSecret()).isEqualTo("client-secret");
+        assertThat(gitLabConfiguration.authenticateWith()).isEqualTo(AuthenticateWith.GITLAB_ENTERPRISE);
+        assertThat(gitLabConfiguration.gitLabEnterpriseUrl()).isEqualTo("my-enterprise-url");
     }
 
 }

@@ -19,13 +19,12 @@ package cd.go.authorization.gitlab.executors;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.requests.VerifyConnectionRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,7 +32,7 @@ public class VerifyConnectionRequestExecutorTest {
     private VerifyConnectionRequest request;
     private VerifyConnectionRequestExecutor executor;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         request = mock(VerifyConnectionRequest.class);
 
@@ -65,7 +64,7 @@ public class VerifyConnectionRequestExecutorTest {
                 "  \"status\": \"validation-failed\"\n" +
                 "}";
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), JSONCompareMode.NON_EXTENSIBLE);
     }
 
@@ -82,7 +81,7 @@ public class VerifyConnectionRequestExecutorTest {
                 "  \"status\": \"success\"\n" +
                 "}";
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), JSONCompareMode.NON_EXTENSIBLE);
     }
 }

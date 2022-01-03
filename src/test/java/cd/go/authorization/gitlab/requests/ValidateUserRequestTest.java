@@ -18,18 +18,17 @@ package cd.go.authorization.gitlab.requests;
 
 import cd.go.authorization.gitlab.executors.ValidateUserRequestExecutor;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class ValidateUserRequestTest {
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         apiRequest = mock(GoPluginApiRequest.class);
 
@@ -52,14 +51,14 @@ public class ValidateUserRequestTest {
     public void shouldParseRequest() {
         ValidateUserRequest request = (ValidateUserRequest) ValidateUserRequest.from(apiRequest);
 
-        assertThat(request.getUsername(), is("bob"));
-        assertThat(request.getAuthConfig().getId(), is("GitLab"));
+        assertThat(request.getUsername()).isEqualTo("bob");
+        assertThat(request.getAuthConfig().getId()).isEqualTo("GitLab");
     }
 
     @Test
     public void shouldReturnValidExecutor() {
         Request request = ValidateUserRequest.from(apiRequest);
 
-        assertThat(request.executor() instanceof ValidateUserRequestExecutor, is(true));
+        assertThat(request.executor() instanceof ValidateUserRequestExecutor).isEqualTo(true);
     }
 }

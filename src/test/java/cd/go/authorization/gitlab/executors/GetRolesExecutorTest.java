@@ -24,17 +24,15 @@ import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.models.GitLabRole;
 import cd.go.authorization.gitlab.requests.GetRolesRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 public class GetRolesExecutorTest {
@@ -46,7 +44,7 @@ public class GetRolesExecutorTest {
     private GitLabUser gitLabUser;
     private final String PERSONAL_ACCESS_TOKEN = "some-random-token";
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         request = mock(GetRolesRequest.class);
         authorizer = mock(GitLabAuthorizer.class);
@@ -71,9 +69,9 @@ public class GetRolesExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals("[]", response.responseBody(), true);
-        verifyZeroInteractions(authorizer);
+        verifyNoInteractions(authorizer);
     }
 
     @Test
@@ -84,7 +82,7 @@ public class GetRolesExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals("[\"blackbird\",\"super-admin\"]", response.responseBody(), true);
 
         verify(gitLabClient).user(request.getAuthConfig().gitLabConfiguration().personalAccessToken());
@@ -97,9 +95,9 @@ public class GetRolesExecutorTest {
 
         GoPluginApiResponse response = executor.execute();
 
-        assertThat(response.responseCode(), is(500));
+        assertThat(response.responseCode()).isEqualTo(500);
         verify(gitLabClient).user(request.getAuthConfig().gitLabConfiguration().personalAccessToken());
-        verifyZeroInteractions(authorizer);
+        verifyNoInteractions(authorizer);
     }
 
     private GitLabRole roleWithName(String name) {

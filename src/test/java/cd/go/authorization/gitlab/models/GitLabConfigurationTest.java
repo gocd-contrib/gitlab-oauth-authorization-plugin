@@ -16,14 +16,12 @@
 
 package cd.go.authorization.gitlab.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GitLabConfigurationTest {
 
@@ -36,10 +34,10 @@ public class GitLabConfigurationTest {
                 "  \"ClientSecret\": \"client-secret\"" +
                 "}");
 
-        assertThat(gitLabConfiguration.applicationId(), is("client-id"));
-        assertThat(gitLabConfiguration.clientSecret(), is("client-secret"));
-        assertThat(gitLabConfiguration.gitLabEnterpriseUrl(), is("https://enterprise.url"));
-        assertThat(gitLabConfiguration.authenticateWith(), is(AuthenticateWith.GITLAB_ENTERPRISE));
+        assertThat(gitLabConfiguration.applicationId()).isEqualTo("client-id");
+        assertThat(gitLabConfiguration.clientSecret()).isEqualTo("client-secret");
+        assertThat(gitLabConfiguration.gitLabEnterpriseUrl()).isEqualTo("https://enterprise.url");
+        assertThat(gitLabConfiguration.authenticateWith()).isEqualTo(AuthenticateWith.GITLAB_ENTERPRISE);
     }
 
     @Test
@@ -65,9 +63,9 @@ public class GitLabConfigurationTest {
 
         final Map<String, String> properties = gitLabConfiguration.toProperties();
 
-        assertThat(properties, hasEntry("ApplicationId", "client-id"));
-        assertThat(properties, hasEntry("ClientSecret", "client-secret"));
-        assertThat(properties, hasEntry("AuthenticateWith", "GitLabEnterprise"));
-        assertThat(properties, hasEntry("GitLabEnterpriseUrl", "http://enterprise.url"));
+        assertThat(properties).containsEntry("ApplicationId", "client-id");
+        assertThat(properties).containsEntry("ClientSecret", "client-secret");
+        assertThat(properties).containsEntry("AuthenticateWith", "GitLabEnterprise");
+        assertThat(properties).containsEntry("GitLabEnterpriseUrl", "http://enterprise.url");
     }
 }

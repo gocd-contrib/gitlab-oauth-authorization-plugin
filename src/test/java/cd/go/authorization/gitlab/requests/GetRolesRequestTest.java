@@ -18,19 +18,17 @@ package cd.go.authorization.gitlab.requests;
 
 import cd.go.authorization.gitlab.executors.GetRolesExecutor;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class GetRolesRequestTest {
     private GoPluginApiRequest apiRequest;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         apiRequest = mock(GoPluginApiRequest.class);
 
@@ -54,15 +52,15 @@ public class GetRolesRequestTest {
     public void shouldParseRequest() {
         GetRolesRequest request = (GetRolesRequest) GetRolesRequest.from(apiRequest);
 
-        assertThat(request.getUsername(), is("bob"));
-        assertThat(request.getAuthConfig().getId(), is("GitLab"));
-        assertThat(request.getRoles(), hasSize(0));
+        assertThat(request.getUsername()).isEqualTo("bob");
+        assertThat(request.getAuthConfig().getId()).isEqualTo("GitLab");
+        assertThat(request.getRoles()).hasSize(0);
     }
 
     @Test
     public void shouldReturnValidExecutor() {
         Request request = GetRolesRequest.from(apiRequest);
 
-        assertThat(request.executor() instanceof GetRolesExecutor, is(true));
+        assertThat(request.executor() instanceof GetRolesExecutor).isEqualTo(true);
     }
 }

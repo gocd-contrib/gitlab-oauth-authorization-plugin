@@ -16,10 +16,9 @@
 
 package cd.go.authorization.gitlab.client.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MembershipInfoTest {
     @Test
@@ -33,11 +32,11 @@ public class MembershipInfoTest {
                 "  \"access_level\": 30" +
                 "}\n");
 
-        assertThat(membershipInfo.getId(), is(1L));
-        assertThat(membershipInfo.getUsername(), is("raymond_smith"));
-        assertThat(membershipInfo.getName(), is("Raymond Smith"));
-        assertThat(membershipInfo.getState(), is("active"));
-        assertThat(membershipInfo.getCreatedAt(), is("2012-10-22T14:13:35Z"));
-        assertThat(membershipInfo.getAccessLevel(), is(AccessLevel.DEVELOPER));
+        assertThat(membershipInfo.getId()).isEqualTo(1L);
+        assertThat(membershipInfo.getUsername()).isEqualTo("raymond_smith");
+        assertThat(membershipInfo.getName()).isEqualTo("Raymond Smith");
+        assertThat(membershipInfo.getState()).isEqualTo("active");
+        assertThat(membershipInfo.getCreatedAt()).isEqualTo("2012-10-22T14:13:35Z");
+        assertThat(membershipInfo.getAccessLevel()).isEqualTo(AccessLevel.DEVELOPER);
     }
 }

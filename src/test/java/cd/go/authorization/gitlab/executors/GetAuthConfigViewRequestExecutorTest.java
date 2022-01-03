@@ -22,22 +22,21 @@ import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.utils.Util;
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetAuthConfigViewRequestExecutorTest {
 
     @Test
     public void shouldRenderTheTemplateInJSON() throws Exception {
         GoPluginApiResponse response = new GetAuthConfigViewRequestExecutor().execute();
-        assertThat(response.responseCode(), is(200));
+        assertThat(response.responseCode()).isEqualTo(200);
         Map<String, String> hashSet = new Gson().fromJson(response.responseBody(), HashMap.class);
-        assertThat(hashSet, hasEntry("template", Util.readResource("/auth-config.template.html")));
+        assertThat(hashSet).containsEntry("template", Util.readResource("/auth-config.template.html"));
     }
 
     @Test
@@ -45,11 +44,11 @@ public class GetAuthConfigViewRequestExecutorTest {
         String template = Util.readResource("/auth-config.template.html");
 
         for (ProfileMetadata field : MetadataHelper.getMetadata(GitLabConfiguration.class)) {
-            assertThat(template, containsString("ng-model=\"" + field.getKey() + "\""));
-            assertThat(template, containsString("<span class=\"form_error form-error\" ng-class=\"{'is-visible': GOINPUTNAME[" +
+            assertThat(template).contains("ng-model=\"" + field.getKey() + "\"");
+            assertThat(template).contains("<span class=\"form_error form-error\" ng-class=\"{'is-visible': GOINPUTNAME[" +
                     field.getKey() + "].$error.server}\" ng-show=\"GOINPUTNAME[" +
                     field.getKey() + "].$error.server\">{{GOINPUTNAME[" +
-                    field.getKey() + "].$error.server}}</span>"));
+                    field.getKey() + "].$error.server}}</span>");
         }
     }
 }

@@ -20,8 +20,8 @@ import cd.go.authorization.gitlab.requests.RoleConfigValidateRequest;
 import com.google.gson.Gson;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 public class RoleConfigValidateRequestExecutorTest {
     private GoPluginApiRequest request;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         request = mock(GoPluginApiRequest.class);
     }

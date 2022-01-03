@@ -16,11 +16,10 @@
 
 package cd.go.authorization.gitlab.models;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GitLabRoleConfigurationTest {
 
@@ -31,6 +30,6 @@ public class GitLabRoleConfigurationTest {
                 "  \"Projects\": \"project-1:developer\"" +
                 "}");
 
-        assertThat(gitLabRoleConfiguration.groups(), hasEntry("group-1", asList("guest", "owner")));
+        assertThat(gitLabRoleConfiguration.groups()).containsEntry("group-1", asList("guest", "owner"));
     }
 }

@@ -18,14 +18,13 @@ package cd.go.authorization.gitlab.executors;
 
 import cd.go.authorization.gitlab.utils.Util;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 import java.util.HashMap;
 
 import static cd.go.authorization.gitlab.utils.Util.GSON;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetPluginIconRequestExecutorTest {
 
@@ -33,8 +32,8 @@ public class GetPluginIconRequestExecutorTest {
     public void rendersIconInBase64() throws Exception {
         GoPluginApiResponse response = new GetPluginIconRequestExecutor().execute();
         HashMap<String, String> hashMap = GSON.fromJson(response.responseBody(), HashMap.class);
-        assertThat(hashMap.size(), is(2));
-        assertThat(hashMap.get("content_type"), is("image/png"));
-        assertThat(Util.readResourceBytes("/logo.png"), is(Base64.getDecoder().decode(hashMap.get("data"))));
+        assertThat(hashMap.size()).isEqualTo(2);
+        assertThat(hashMap.get("content_type")).isEqualTo("image/png");
+        assertThat(Util.readResourceBytes("/logo.png")).isEqualTo(Base64.getDecoder().decode(hashMap.get("data")));
     }
 }
