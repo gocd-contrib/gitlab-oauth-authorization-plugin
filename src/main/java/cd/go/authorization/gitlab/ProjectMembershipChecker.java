@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 ThoughtWorks, Inc.
+ * Copyright 2022 Thoughtworks, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import cd.go.authorization.gitlab.client.GitLabClient;
 import cd.go.authorization.gitlab.client.models.GitLabProject;
 import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.client.models.MembershipInfo;
-import cd.go.authorization.gitlab.models.TokenInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
