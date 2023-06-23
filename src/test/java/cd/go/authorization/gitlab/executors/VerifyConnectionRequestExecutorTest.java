@@ -70,7 +70,7 @@ public class VerifyConnectionRequestExecutorTest {
 
     @Test
     public void shouldReturnSuccessResponseOnSuccessfulVerification() throws Exception {
-        final GitLabConfiguration gitLabConfiguration = mock(GitLabConfiguration.class);
+        final GitLabConfiguration gitLabConfiguration = GitLabConfiguration.fromJSON("{ \"ApplicationId\": \"id\", \"ClientId\": \"id\", \"ClientSecret\": \"secret\", \"PersonalAccessToken\": \"pat\"}");
 
         when(request.gitLabConfiguration()).thenReturn(gitLabConfiguration);
 
