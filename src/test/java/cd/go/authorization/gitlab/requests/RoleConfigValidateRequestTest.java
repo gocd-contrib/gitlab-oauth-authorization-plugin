@@ -22,7 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import static java.util.Arrays.asList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -49,6 +50,6 @@ public class RoleConfigValidateRequestTest {
         final RoleConfigValidateRequest request = RoleConfigValidateRequest.from(apiRequest);
         final GitLabRoleConfiguration gitLabRoleConfiguration = request.gitLabRoleConfiguration();
 
-        assertThat(gitLabRoleConfiguration.groups()).containsEntry("group-1", asList("guest", "owner"));
+        assertThat(gitLabRoleConfiguration.groups()).containsEntry("group-1", List.of("guest", "owner"));
     }
 }

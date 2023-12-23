@@ -78,7 +78,7 @@ public class GetRolesExecutorTest {
     public void shouldReturnSuccessResponseWithRoles() throws Exception {
         when(gitLabClient.user(PERSONAL_ACCESS_TOKEN)).thenReturn(gitLabUser);
         when(request.getRoles()).thenReturn(rolesWithName("blackbird", "super-admin", "view"));
-        when(authorizer.authorize(gitLabUser, request.getAuthConfig(), request.getRoles())).thenReturn(Arrays.asList("blackbird", "super-admin"));
+        when(authorizer.authorize(gitLabUser, request.getAuthConfig(), request.getRoles())).thenReturn(List.of("blackbird", "super-admin"));
 
         GoPluginApiResponse response = executor.execute();
 

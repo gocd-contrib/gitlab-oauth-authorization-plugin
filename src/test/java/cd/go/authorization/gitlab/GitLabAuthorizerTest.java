@@ -27,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,11 +64,11 @@ public class GitLabAuthorizerTest {
         final GitLabRoleConfiguration gitLabRoleConfiguration = mock(GitLabRoleConfiguration.class);
 
         when(gitLabRole.roleConfiguration()).thenReturn(gitLabRoleConfiguration);
-        when(gitLabRoleConfiguration.users()).thenReturn(asList("bob"));
+        when(gitLabRoleConfiguration.users()).thenReturn(List.of("bob"));
         when(gitLabUser.getUsername()).thenReturn("bob");
         when(gitLabRole.name()).thenReturn("admin");
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, List.of(gitLabRole));
 
         assertThat(roles).hasSize(1);
         assertThat(roles).contains("admin");
@@ -79,7 +78,7 @@ public class GitLabAuthorizerTest {
     public void shouldAssignRoleWhenUserIsAMemberOfAGroup() throws Exception {
         final GitLabRole gitLabRole = mock(GitLabRole.class);
         final GitLabRoleConfiguration gitLabRoleConfiguration = mock(GitLabRoleConfiguration.class);
-        final List<GitLabGroup> gitLabGroups = asList(mock(GitLabGroup.class));
+        final List<GitLabGroup> gitLabGroups = List.of(mock(GitLabGroup.class));
         final Map<String, List<String>> groups = singletonMap("group-a", emptyList());
         final String personalAccessToken = "some-random-token";
 
@@ -90,7 +89,7 @@ public class GitLabAuthorizerTest {
         when(gitLabRoleConfiguration.groups()).thenReturn(groups);
         when(groupMembershipChecker.memberOfAtLeastOneGroup(gitLabUser, personalAccessToken, gitLabClient, gitLabGroups, groups)).thenReturn(true);
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, List.of(gitLabRole));
 
         assertThat(roles).hasSize(1);
         assertThat(roles).contains("admin");
@@ -100,8 +99,8 @@ public class GitLabAuthorizerTest {
     public void shouldAssignRoleWhenUserIsAMemberOfAProject() throws Exception {
         final GitLabRole gitLabRole = mock(GitLabRole.class);
         final GitLabRoleConfiguration gitLabRoleConfiguration = mock(GitLabRoleConfiguration.class);
-        final List<GitLabGroup> gitLabGroups = asList(mock(GitLabGroup.class));
-        final List<GitLabProject> gitLabProjects = asList(mock(GitLabProject.class));
+        final List<GitLabGroup> gitLabGroups = List.of(mock(GitLabGroup.class));
+        final List<GitLabProject> gitLabProjects = List.of(mock(GitLabProject.class));
         final Map<String, List<String>> projects = singletonMap("project-foo", emptyList());
         final String personalAccessToken = "some-random-token";
 
@@ -114,7 +113,7 @@ public class GitLabAuthorizerTest {
 
         when(projectMembershipChecker.memberOfAtLeastOneProject(gitLabUser, personalAccessToken, gitLabClient, gitLabProjects, projects)).thenReturn(true);
 
-        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, asList(gitLabRole));
+        final List<String> roles = gitLabAuthorizer.authorize(gitLabUser, authConfig, List.of(gitLabRole));
 
         verify(projectMembershipChecker).memberOfAtLeastOneProject(any(), anyString(), any(), anyList(), anyMap());
         assertThat(roles).hasSize(1);

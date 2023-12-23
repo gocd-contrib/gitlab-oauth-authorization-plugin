@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,7 +55,7 @@ public class ProjectMembershipCheckerTest {
     public void shouldReturnTrueWhenUserIsAMemberOfGroup() throws Exception {
         final Map<String, List<String>> groupsFromRole = singletonMap("project-duck-simulator", emptyList());
         final GitLabProject gitLabProject = mock(GitLabProject.class);
-        final List<GitLabProject> gitLabProjects = asList(gitLabProject);
+        final List<GitLabProject> gitLabProjects = List.of(gitLabProject);
 
         when(gitLabProject.getName()).thenReturn("project-duck-simulator");
 
@@ -68,10 +67,10 @@ public class ProjectMembershipCheckerTest {
 
     @Test
     public void shouldCheckForAccessLevelWhenProvidedInRoleConfig() throws Exception {
-        final Map<String, List<String>> groupsFromRole = singletonMap("project-duck-simulator", asList("developer"));
+        final Map<String, List<String>> groupsFromRole = singletonMap("project-duck-simulator", List.of("developer"));
         final GitLabProject gitLabProjectA = mock(GitLabProject.class);
         final GitLabProject gitLabProjectB = mock(GitLabProject.class);
-        final List<GitLabProject> gitLabProjects = asList(gitLabProjectB, gitLabProjectA);
+        final List<GitLabProject> gitLabProjects = List.of(gitLabProjectB, gitLabProjectA);
         final MembershipInfo membershipInfo = mock(MembershipInfo.class);
 
         when(gitLabProjectA.getName()).thenReturn("project-duck-simulator");
