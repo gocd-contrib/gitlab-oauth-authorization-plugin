@@ -29,7 +29,6 @@ import org.mockito.Mock;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonMap;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -56,7 +55,7 @@ public class GroupMembershipCheckerTest {
     public void shouldReturnTrueWhenUserIsAMemberOfGroup() throws Exception {
         final Map<String, List<String>> groupsFromRole = singletonMap("group-a", emptyList());
         final GitLabGroup gitLabGroup = mock(GitLabGroup.class);
-        final List<GitLabGroup> gitLabGroups = asList(gitLabGroup);
+        final List<GitLabGroup> gitLabGroups = List.of(gitLabGroup);
         final String personalAccessToken = "some-random-token";
 
         when(gitLabGroup.getName()).thenReturn("group-a");
@@ -69,10 +68,10 @@ public class GroupMembershipCheckerTest {
 
     @Test
     public void shouldCheckForAccessLevelWhenProvidedInRoleConfig() throws Exception {
-        final Map<String, List<String>> groupsFromRole = singletonMap("group-a", asList("developer"));
+        final Map<String, List<String>> groupsFromRole = singletonMap("group-a", List.of("developer"));
         final GitLabGroup gitLabGroupA = mock(GitLabGroup.class);
         final GitLabGroup gitLabGroupB = mock(GitLabGroup.class);
-        final List<GitLabGroup> gitLabGroups = asList(gitLabGroupB, gitLabGroupA);
+        final List<GitLabGroup> gitLabGroups = List.of(gitLabGroupB, gitLabGroupA);
         final MembershipInfo membershipInfo = mock(MembershipInfo.class);
         final String personalAccessToken = "some-random-token";
 

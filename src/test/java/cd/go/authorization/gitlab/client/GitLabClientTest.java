@@ -33,7 +33,6 @@ import org.mockito.Mock;
 import java.util.List;
 
 import static cd.go.authorization.gitlab.utils.Util.GSON;
-import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,9 +83,11 @@ public class GitLabClientTest {
 
     @Test
     public void shouldFetchTokenInfoUsingAuthorizationCode() throws Exception {
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token").toJSON()));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token").toJSON())
+                .build()
+        );
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -97,16 +98,17 @@ public class GitLabClientTest {
 
         RecordedRequest request = server.takeRequest();
         assertEquals("POST /oauth/token HTTP/1.1", request.getRequestLine());
-        assertEquals("application/x-www-form-urlencoded", request.getHeader("Content-Type"));
+        assertEquals("application/x-www-form-urlencoded", request.getHeaders().get("Content-Type"));
         assertEquals("client_id=client-id&client_secret=client-secret&code=code&grant_type=authorization_code&redirect_uri=callback-url", request.getBody().readUtf8());
     }
 
     @Test
     public void shouldFetchUserProfile() throws Exception {
         final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(new GitLabUser("username", "Display Name", "email").toJSON()));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(new GitLabUser("username", "Display Name", "email").toJSON())
+                .build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -121,9 +123,10 @@ public class GitLabClientTest {
     @Test
     public void shouldFetchGroupsForAUser() throws Exception {
         final String personalAccessToken = "some-random-token";
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(GSON.toJson(asList(new GitLabGroup(1L, "foo-group")))));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(GSON.toJson(List.of(new GitLabGroup(1L, "foo-group"))))
+                .build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -141,9 +144,10 @@ public class GitLabClientTest {
     @Test
     public void shouldFetchProjectsForAUser() throws Exception {
         final String personalAccessToken = "some-random-token";
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(GSON.toJson(asList(new GitLabProject(1L, "foo-project")))));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(GSON.toJson(List.of(new GitLabProject(1L, "foo-project"))))
+                .build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -162,9 +166,10 @@ public class GitLabClientTest {
     public void shouldFetchGroupMembershipForAUser() throws Exception {
         final String personalAccessToken = "some-random-token";
 
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(new MembershipInfo(1L, "foo-user", AccessLevel.DEVELOPER).toJSON()));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(new MembershipInfo(1L, "foo-user", AccessLevel.DEVELOPER).toJSON())
+                .build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -183,9 +188,10 @@ public class GitLabClientTest {
     public void shouldFetchProjectMembershipForAUser() throws Exception {
         final String personalAccessToken = "some-random-token";
 
-        server.enqueue(new MockResponse()
-                .setResponseCode(200)
-                .setBody(new MembershipInfo(1L, "foo-user", AccessLevel.DEVELOPER).toJSON()));
+        server.enqueue(new MockResponse.Builder()
+                .code(200)
+                .body(new MembershipInfo(1L, "foo-user", AccessLevel.DEVELOPER).toJSON())
+                .build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
@@ -204,7 +210,7 @@ public class GitLabClientTest {
     public void shouldErrorOutWhenAPIRequestFails() throws Exception {
         final TokenInfo tokenInfo = new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token");
 
-        server.enqueue(new MockResponse().setResponseCode(403).setBody("Unauthorized"));
+        server.enqueue(new MockResponse.Builder().code(403).body("Unauthorized").build());
 
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn(server.url("/").toString());
 
