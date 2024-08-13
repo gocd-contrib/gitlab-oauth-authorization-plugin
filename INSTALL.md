@@ -3,7 +3,7 @@
 ## Requirements
 
 * GoCD server version v17.5.0 or above
-* GitLab OAuth application's `ApplicationId` and `ClientSectret`
+* GitLab OAuth application's `ApplicationId` and `ClientSecret`
 
 ## Installation
 
