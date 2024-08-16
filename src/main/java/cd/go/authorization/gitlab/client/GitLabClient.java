@@ -62,7 +62,7 @@ public class GitLabClient {
                 .addQueryParameter("client_id", gitLabConfiguration.applicationId())
                 .addQueryParameter("redirect_uri", callbackUrl)
                 .addQueryParameter("response_type", "code")
-                .addQueryParameter("scope", "read_user")
+                .addQueryParameter("scope", "api")
                 .addQueryParameter("state", state)
                 .build().toString();
 

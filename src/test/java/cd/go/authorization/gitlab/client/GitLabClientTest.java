@@ -72,7 +72,7 @@ public class GitLabClientTest {
 
         assertThat(authorizationServerArgs).satisfies(args -> {
             assertThat(args.size()).isEqualTo(2);
-            assertThat(args.get(0)).isEqualTo("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=read_user&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
+            assertThat(args.get(0)).isEqualTo("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
         });
     }
 
@@ -85,7 +85,7 @@ public class GitLabClientTest {
 
         assertThat(authorizationServerArgs).satisfies(args -> {
             assertThat(args.size()).isEqualTo(2);
-            assertThat(args.get(0)).isEqualTo("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=read_user&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
+            assertThat(args.get(0)).isEqualTo("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
         });
     }
 
