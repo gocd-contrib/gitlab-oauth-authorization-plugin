@@ -27,7 +27,6 @@ import okhttp3.*;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static cd.go.authorization.gitlab.GitLabPlugin.LOG;
@@ -55,16 +54,19 @@ public class GitLabClient {
         this.httpClient = httpClient;
     }
 
-    public String authorizationServerUrl(String callbackUrl) {
-        return HttpUrl.parse(gitLabConfiguration.gitLabBaseURL()).newBuilder()
+    public List<String> authorizationServerArgs(String callbackUrl) {
+        String state = StateGenerator.generate();
+        String authorizationServerUrl = HttpUrl.parse(gitLabConfiguration.gitLabBaseURL()).newBuilder()
                 .addPathSegment("oauth")
                 .addPathSegment("authorize")
                 .addQueryParameter("client_id", gitLabConfiguration.applicationId())
                 .addQueryParameter("redirect_uri", callbackUrl)
                 .addQueryParameter("response_type", "code")
                 .addQueryParameter("scope", "api")
-                .addQueryParameter("state", UUID.randomUUID().toString())
+                .addQueryParameter("state", state)
                 .build().toString();
+
+        return List.of(authorizationServerUrl, state);
     }
 
     public TokenInfo fetchAccessToken(String code) throws IOException {

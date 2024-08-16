@@ -16,7 +16,9 @@
 
 package cd.go.authorization.gitlab.executors;
 
+import cd.go.authorization.gitlab.Constants;
 import cd.go.authorization.gitlab.client.GitLabClient;
+import cd.go.authorization.gitlab.exceptions.AuthenticationException;
 import cd.go.authorization.gitlab.exceptions.NoAuthorizationConfigurationException;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
@@ -29,11 +31,12 @@ import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 public class FetchAccessTokenRequestExecutorTest {
     private FetchAccessTokenRequest fetchAccessTokenRequest;
@@ -60,6 +63,8 @@ public class FetchAccessTokenRequestExecutorTest {
         FetchAccessTokenRequestExecutor executor = new FetchAccessTokenRequestExecutor(FetchAccessTokenRequest.from(request));
 
         assertThatThrownBy(executor::execute).isInstanceOf(NoAuthorizationConfigurationException.class);
+
+        verify(fetchAccessTokenRequest, never()).validateState();
     }
 
     @Test
@@ -83,5 +88,19 @@ public class FetchAccessTokenRequestExecutorTest {
 
         assertThat(response.responseCode()).isEqualTo(200);
         JSONAssert.assertEquals(expectedJSON, response.responseBody(), true);
+
+        verify(fetchAccessTokenRequest).validateState();
+    }
+
+
+    @Test
+    public void fetchAccessToken_shouldErrorIfStateDoesNotMatch() {
+        when(fetchAccessTokenRequest.authConfigs()).thenReturn(Collections.singletonList(authConfig));
+        when(fetchAccessTokenRequest.authSession()).thenReturn(Map.of(Constants.AUTH_SESSION_STATE, "some-value"));
+        when(fetchAccessTokenRequest.requestParameters()).thenReturn(Collections.singletonMap("code", "code-received-in-previous-step"));
+        doThrow(new AuthenticationException("error validating state")).when(fetchAccessTokenRequest).validateState();
+
+        Exception exception = assertThrows(AuthenticationException.class, executor::execute);
+        assertThat(exception.getMessage()).isEqualTo("error validating state");
     }
 }

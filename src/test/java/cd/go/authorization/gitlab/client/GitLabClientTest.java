@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static cd.go.authorization.gitlab.utils.Util.GSON;
@@ -65,20 +67,26 @@ public class GitLabClientTest {
     }
 
     @Test
-    public void shouldReturnAuthorizationServerUrlForGitLab() throws Exception {
-        final String authorizationServerUrl = gitLabClient.authorizationServerUrl("call-back-url");
+    public void shouldReturnAuthorizationServerArgsForGitLab() throws Exception {
+        final List<String> authorizationServerArgs = gitLabClient.authorizationServerArgs("call-back-url");
 
-        assertThat(authorizationServerUrl).startsWith("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=");
+        assertThat(authorizationServerArgs).satisfies(args -> {
+            assertThat(args.size()).isEqualTo(2);
+            assertThat(args.get(0)).isEqualTo("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
+        });
     }
 
     @Test
-    public void shouldReturnAuthorizationServerUrlForGitLabEnterprise() throws Exception {
+    public void shouldReturnAuthorizationServerArgsForGitLabEnterprise() throws Exception {
         when(gitLabConfiguration.authenticateWith()).thenReturn(AuthenticateWith.GITLAB_ENTERPRISE);
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn("http://enterprise.url");
 
-        final String authorizationServerUrl = gitLabClient.authorizationServerUrl("call-back-url");
+        final List<String> authorizationServerArgs = gitLabClient.authorizationServerArgs("call-back-url");
 
-        assertThat(authorizationServerUrl).startsWith("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=");
+        assertThat(authorizationServerArgs).satisfies(args -> {
+            assertThat(args.size()).isEqualTo(2);
+            assertThat(args.get(0)).isEqualTo("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
+        });
     }
 
     @Test

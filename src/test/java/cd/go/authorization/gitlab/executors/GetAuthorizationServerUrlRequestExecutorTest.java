@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,11 +69,11 @@ public class GetAuthorizationServerUrlRequestExecutorTest {
         when(authConfig.gitLabConfiguration()).thenReturn(gitLabConfiguration);
         when(request.callbackUrl()).thenReturn("call-back-url");
         when(gitLabConfiguration.gitLabClient()).thenReturn(gitLabClient);
-        when(gitLabClient.authorizationServerUrl("call-back-url")).thenReturn("foo-url");
+        when(gitLabClient.authorizationServerArgs("call-back-url")).thenReturn(List.of("foo-url", "foo-state"));
 
         final GoPluginApiResponse response = executor.execute();
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(response.responseBody()).startsWith("{\"authorization_server_url\":\"foo-url");
+        assertThat(response.responseBody()).startsWith("{\"authorization_server_url\":\"foo-url\",\"auth_session\":{\"oauth2_state\":\"foo-state\"}}");
     }
 }

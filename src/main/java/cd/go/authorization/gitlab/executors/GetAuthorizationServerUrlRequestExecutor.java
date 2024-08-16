@@ -16,13 +16,15 @@
 
 package cd.go.authorization.gitlab.executors;
 
+import cd.go.authorization.gitlab.Constants;
 import cd.go.authorization.gitlab.exceptions.NoAuthorizationConfigurationException;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.requests.GetAuthorizationServerUrlRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static cd.go.authorization.gitlab.GitLabPlugin.LOG;
 import static cd.go.authorization.gitlab.utils.Util.GSON;
@@ -43,8 +45,11 @@ public class GetAuthorizationServerUrlRequestExecutor implements RequestExecutor
 
         final GitLabConfiguration gitLabConfiguration = request.authConfigs().get(0).gitLabConfiguration();
 
-        String authorizationServerUrl = gitLabConfiguration.gitLabClient().authorizationServerUrl(request.callbackUrl());
+        List<String> args = gitLabConfiguration.gitLabClient().authorizationServerArgs(request.callbackUrl());
 
-        return DefaultGoPluginApiResponse.success(GSON.toJson(Collections.singletonMap("authorization_server_url", authorizationServerUrl)));
+        return DefaultGoPluginApiResponse.success(GSON.toJson(Map.of(
+                "authorization_server_url", args.get(0),
+                "auth_session", Map.of(Constants.AUTH_SESSION_STATE, args.get(1))
+        )));
     }
 }
