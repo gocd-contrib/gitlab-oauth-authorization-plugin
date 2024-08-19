@@ -74,6 +74,8 @@ public class GetAuthorizationServerUrlRequestExecutorTest {
         final GoPluginApiResponse response = executor.execute();
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(response.responseBody()).startsWith("{\"authorization_server_url\":\"foo-url\",\"auth_session\":{\"oauth2_state\":\"foo-state\"}}");
+        assertThat(response.responseBody())
+                .contains("\"authorization_server_url\":\"foo-url\"")
+                .contains("\"auth_session\":{\"oauth2_state\":\"foo-state\"}");
     }
 }
