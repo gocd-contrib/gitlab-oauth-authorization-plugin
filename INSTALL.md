@@ -45,6 +45,12 @@ on Windows.
 
 ### Create Personal Access Token
 
+A Gitlab Access Token is only needed when wanting to use either of these two functionalities:
+- Allow users to generate/issue GoCD Personal Access Tokens
+- Use GoCD role configuration for authorization (mapping GitLab groups to GoCD roles/permissions)
+
+If you want to use Gitlab only for login, and without GoCD Personal Access Token support, a GitLab Access Token is not required.
+
 1. Login into your GitLab/GitLab Enterprise account
 2. Navigate to **_Settings/Preferences_**
 
