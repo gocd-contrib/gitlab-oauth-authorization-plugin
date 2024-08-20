@@ -21,7 +21,7 @@ on Windows.
 ###  Create GitLab OAuth application
 
 1. Login into your GitLab/GitLab Enterprise account
-2. Navigate to **_Settings_**
+2. Navigate to **_Settings/Preferences_**
 !["GitLab settings"][1]
 
 3. Click on **Applications**.
@@ -29,25 +29,30 @@ on Windows.
 
 4. Fill the following details for application
     - Give a name to your application
-    - In `Redirect URI`, specify `https://your.goserver.url/go/plugin/cd.go.authorization.gitlab/authenticate`. 
-    - In scopes, select `read_user` (older versions of this plugin required `api` scope as in screenshots below. This is now configurable and `read_user` is less permissive, thus recommended.)
+    - In `Redirect URI`, specify `https://your.goserver.url/go/plugin/cd.go.authorization.gitlab/authenticate`.
+    - Ensure `Confidential` is selected.
+    - In scopes, select `read_user` (versions of this plugin before `2.2` required `api` scope. This is now configurable and `read_user` is less permissive, thus recommended.)
     
     !["Fill application details"][3]
    
 5. Click **Save application**.
-!["Save application"][4]
+
+   !["Save application"][4]
 
 7. Note down the `Application ID` and `Secret` of your application.
-!["GitLab application info"][5]
+
+   !["GitLab application info"][5]
 
 ### Create Personal Access Token
 
 1. Login into your GitLab/GitLab Enterprise account
-2. Navigate to **_Settings_**
-!["GitLab settings"][1]
+2. Navigate to **_Settings/Preferences_**
+
+   !["GitLab settings"][1]
 
 3. Click on **Access Tokens**
-!["GitLab access tokens"][7]
+   
+   !["GitLab access tokens"][7]
 
 4. Fill the following details for access token
     - Give a name to your token
@@ -56,10 +61,12 @@ on Windows.
     !["Fill access token detail"][8]
 
 5. Click **Save token**.
-!["Save token"][9]
+   
+   !["Save token"][9]
 
 6. Note down the `Token Value`.
-![GitLab personal access token info][10]
+
+   ![GitLab personal access token info][10]
 
 ### Create Authorization Configuration
 
@@ -68,7 +75,7 @@ on Windows.
     1. Specify `id` for auth config
     2. Select `GitLab OAuth authorization plugin` for **_Plugin id_**
     3. Choose `GitLab` or `GitLab Enterprise` for `Authenticate with`.
-    4. Specify **_Application ID_**, **_Client Secret_** and validate the *_Client Scopes Requested_* match your GitLab Application.
+    4. Specify **_Application ID_**, **_Client Secret_** and validate the **_Client Scopes Requested_** match your GitLab Application.
     5. Specify **_Personal Access Token Value_** if necessary (see tooltip).
     6. Save your configuration
     
