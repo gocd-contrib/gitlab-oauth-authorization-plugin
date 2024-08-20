@@ -62,15 +62,13 @@ If you want to use Gitlab only for login, and without GoCD Personal Access Token
 
 4. Fill the following details for access token
     - Give a name to your token
-    - In scopes, select `api` and `read_user`
+    - In scopes
+      - select `read_user` if you only want to support GocD Personal Access Tokens.
+      - select `read_api` if you **also** intend to configure authorizations/GoCD role mappings from Gitlab -> GoCD.
 
     !["Fill access token detail"][8]
 
-5. Click **Save token**.
-   
-   !["Save token"][9]
-
-6. Note down the `Token Value`.
+5. Note down the `Token Value`.
 
    ![GitLab personal access token info][10]
 
