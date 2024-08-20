@@ -28,6 +28,7 @@ import okhttp3.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static cd.go.authorization.gitlab.GitLabPlugin.LOG;
 import static cd.go.authorization.gitlab.utils.Util.isNotBlank;
@@ -62,7 +63,7 @@ public class GitLabClient {
                 .addQueryParameter("client_id", gitLabConfiguration.applicationId())
                 .addQueryParameter("redirect_uri", callbackUrl)
                 .addQueryParameter("response_type", "code")
-                .addQueryParameter("scope", "api")
+                .addQueryParameter("scope", gitLabConfiguration.clientScopesRequested().stream().collect(Collectors.joining(" ")))
                 .addQueryParameter("state", state)
                 .build().toString();
 

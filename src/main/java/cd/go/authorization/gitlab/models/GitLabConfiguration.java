@@ -23,12 +23,15 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static cd.go.authorization.gitlab.utils.Util.GSON;
 
 public class GitLabConfiguration implements Validatable {
-    private static final String GITLAB_URL = "https://gitlab.com";
+    public static final String GITLAB_URL = "https://gitlab.com";
+    public static final String DEFAULT_SCOPES = "api";
 
     @Expose
     @SerializedName("ApplicationId")
@@ -39,6 +42,11 @@ public class GitLabConfiguration implements Validatable {
     @SerializedName("ClientSecret")
     @ProfileField(key = "ClientSecret", required = true, secure = true)
     private String clientSecret;
+
+    @Expose
+    @SerializedName("ClientScopesRequested")
+    @ProfileField(key = "ClientScopesRequested", required = true, secure = false)
+    private String clientScopesRequested = DEFAULT_SCOPES;
 
     @Expose
     @SerializedName("AuthenticateWith")
@@ -52,20 +60,22 @@ public class GitLabConfiguration implements Validatable {
 
     @Expose
     @SerializedName("PersonalAccessToken")
-    @ProfileField(key = "PersonalAccessToken", required = true, secure = true)
+    @ProfileField(key = "PersonalAccessToken", required = false, secure = true)
     private String personalAccessToken;
+
     private GitLabClient gitLabClient;
 
     public GitLabConfiguration() {
     }
 
     public GitLabConfiguration(String applicationId, String clientSecret) {
-        this(applicationId, clientSecret, AuthenticateWith.GITLAB, null, "");
+        this(applicationId, clientSecret, null, AuthenticateWith.GITLAB, null, "");
     }
 
-    public GitLabConfiguration(String applicationId, String clientSecret, AuthenticateWith authenticateWith, String gitLabEnterpriseUrl, String personalAccessToken) {
+    public GitLabConfiguration(String applicationId, String clientSecret, String clientScopesRequested, AuthenticateWith authenticateWith, String gitLabEnterpriseUrl, String personalAccessToken) {
         this.applicationId = applicationId;
         this.clientSecret = clientSecret;
+        this.clientScopesRequested = clientScopesRequested == null ? DEFAULT_SCOPES : clientScopesRequested;
         this.authenticateWith = authenticateWith;
         this.gitLabEnterpriseUrl = gitLabEnterpriseUrl;
         this.personalAccessToken = personalAccessToken;
@@ -81,6 +91,10 @@ public class GitLabConfiguration implements Validatable {
 
     public String clientSecret() {
         return clientSecret;
+    }
+
+    public List<String> clientScopesRequested() {
+        return Arrays.stream(clientScopesRequested.split("[ ,]")).filter(b -> !b.isBlank()).toList();
     }
 
     public String toJSON() {
@@ -104,8 +118,7 @@ public class GitLabConfiguration implements Validatable {
     }
 
     public Map<String, String> toProperties() {
-        return GSON.fromJson(toJSON(), new TypeToken<Map<String, String>>() {
-        }.getType());
+        return GSON.fromJson(toJSON(), new TypeToken<Map<String, String>>() {}.getType());
     }
 
     public GitLabClient gitLabClient() {

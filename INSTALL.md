@@ -30,7 +30,7 @@ on Windows.
 4. Fill the following details for application
     - Give a name to your application
     - In `Redirect URI`, specify `https://your.goserver.url/go/plugin/cd.go.authorization.gitlab/authenticate`. 
-    - In scopes, select `api`
+    - In scopes, select `read_user` (older versions of this plugin required `api` scope as in screenshots below. This is now configurable and `read_user` is less permissive, thus recommended.)
     
     !["Fill application details"][3]
    
@@ -68,8 +68,8 @@ on Windows.
     1. Specify `id` for auth config
     2. Select `GitLab OAuth authorization plugin` for **_Plugin id_**
     3. Choose `GitLab` or `GitLab Enterprise` for `Authenticate with`.
-    4. Specify **_Application ID_** and **_Client Secret_**
-    5. Specify **_Token Value_**
+    4. Specify **_Application ID_**, **_Client Secret_** and validate the *_Client Scopes Requested_* match your GitLab Application.
+    5. Specify **_Personal Access Token Value_** if necessary (see tooltip).
     6. Save your configuration
     
     ![Create authorization configuration][6]

@@ -50,10 +50,6 @@ public class AuthConfigValidateRequestExecutorTest {
                 "    \"key\": \"ApplicationId\",\n" +
                 "    \"message\": \"ApplicationId must not be blank.\"\n" +
                 "  },\n" +
-                "  {" +
-                "   \"key\":\"PersonalAccessToken\",\n" +
-                "   \"message\":\"PersonalAccessToken must not be blank.\"\n" +
-                "   }," +
                 "  {\n" +
                 "    \"key\": \"ClientSecret\",\n" +
                 "    \"message\": \"ClientSecret must not be blank.\"\n" +

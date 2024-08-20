@@ -138,11 +138,23 @@
         <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ClientSecret].$error.server}" ng-show="GOINPUTNAME[ClientSecret].$error.server">{{GOINPUTNAME[ClientSecret].$error.server}}</span>
     </div>
 
-    <div class="form_item_block">
-        <label ng-class="{'is-invalid-label': GOINPUTNAME[PersonalAccessToken].$error.server}">Personal Access Token:<span class='asterix'>*</span>
+    <div class="form_item_block" ng-init="ClientScopesRequested = (ClientScopesRequested || 'read_user')">
+        <label ng-class="{'is-invalid-label': GOINPUTNAME[ClientScopesRequested].$error.server}">Client Scopes Requested:<span class='asterix'>*</span>
             <div class="tooltip-info">
               <span class="tooltip-content">
-                Personal access token with access:api permission is required.
+                OAuth2 scopes requested by the plugin (comma, or space-separated). This must match your GitLab Application's configuration and should be "read_user" on new configurations. Set this to more permissive "api" scope for GitLab applications set up before v2.2, or edit your GitLab config allowed scopes.
+              </span>
+            </div>
+        </label>
+        <input ng-class="{'is-invalid-input': GOINPUTNAME[ClientScopesRequested].$error.server}" type="text" ng-model="ClientScopesRequested" ng-required="true" placeholder="read_user"/>
+        <span class="form_error form-error" ng-class="{'is-visible': GOINPUTNAME[ClientScopesRequested].$error.server}" ng-show="GOINPUTNAME[ClientScopesRequested].$error.server">{{GOINPUTNAME[ClientScopesRequested].$error.server}}</span>
+    </div>
+
+    <div class="form_item_block">
+        <label ng-class="{'is-invalid-label': GOINPUTNAME[PersonalAccessToken].$error.server}">Personal Access Token:
+            <div class="tooltip-info">
+              <span class="tooltip-content">
+                Personal access token with access:api permission is required when using the plugin for GoCD role authorizations or for user use of GoCD Access Tokens. Authentication-only usages can omit this if GoCD Access Token support is not required.
               </span>
             </div>
         </label>

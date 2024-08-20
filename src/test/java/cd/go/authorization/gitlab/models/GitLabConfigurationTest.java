@@ -31,23 +31,33 @@ public class GitLabConfigurationTest {
                 "  \"ApplicationId\": \"client-id\",\n" +
                 "  \"AuthenticateWith\": \"GitLabEnterprise\",\n" +
                 "  \"GitLabEnterpriseUrl\": \"https://enterprise.url\",\n" +
-                "  \"ClientSecret\": \"client-secret\"" +
+                "  \"ClientSecret\": \"client-secret\",\n" +
+                "  \"ClientScopesRequested\": \"read_user\"" +
                 "}");
 
         assertThat(gitLabConfiguration.applicationId()).isEqualTo("client-id");
         assertThat(gitLabConfiguration.clientSecret()).isEqualTo("client-secret");
+        assertThat(gitLabConfiguration.clientScopesRequested()).containsExactly("read_user");
         assertThat(gitLabConfiguration.gitLabEnterpriseUrl()).isEqualTo("https://enterprise.url");
         assertThat(gitLabConfiguration.authenticateWith()).isEqualTo(AuthenticateWith.GITLAB_ENTERPRISE);
     }
 
     @Test
+    public void shouldDefaultClientScopesRequestedForBackwardsCompat() throws Exception {
+        final GitLabConfiguration gitLabConfiguration = GitLabConfiguration.fromJSON("{}");
+
+        assertThat(gitLabConfiguration.clientScopesRequested()).containsExactly("api");
+    }
+
+    @Test
     public void shouldSerializeToJSON() throws Exception {
         GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret",
-                AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
+                null, AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
 
         String expectedJSON = "{\n" +
                 "  \"ApplicationId\": \"client-id\",\n" +
                 "  \"ClientSecret\": \"client-secret\",\n" +
+                "  \"ClientScopesRequested\": \"api\",\n" +
                 "  \"AuthenticateWith\": \"GitLabEnterprise\",\n" +
                 "  \"GitLabEnterpriseUrl\": \"http://enterprise.url\",\n" +
                 "  \"PersonalAccessToken\":\"some-random-token\"" +
@@ -59,13 +69,26 @@ public class GitLabConfigurationTest {
 
     @Test
     public void shouldConvertConfigurationToProperties() throws Exception {
-        GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret", AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
+        GitLabConfiguration gitLabConfiguration = new GitLabConfiguration("client-id", "client-secret", null, AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
 
         final Map<String, String> properties = gitLabConfiguration.toProperties();
 
         assertThat(properties).containsEntry("ApplicationId", "client-id");
         assertThat(properties).containsEntry("ClientSecret", "client-secret");
+        assertThat(properties).containsEntry("ClientScopesRequested", "api");
         assertThat(properties).containsEntry("AuthenticateWith", "GitLabEnterprise");
         assertThat(properties).containsEntry("GitLabEnterpriseUrl", "http://enterprise.url");
+    }
+
+    @Test
+    public void shouldSplitScopesToList() {
+        assertThat(configFor("hello,world").clientScopesRequested()).containsExactly("hello", "world");
+        assertThat(configFor("hello world").clientScopesRequested()).containsExactly("hello", "world");
+        assertThat(configFor("hello, world").clientScopesRequested()).containsExactly("hello", "world");
+    }
+
+    private static GitLabConfiguration configFor(String scopes) {
+        return new GitLabConfiguration("client-id", "client-secret",
+                scopes, AuthenticateWith.GITLAB_ENTERPRISE, "http://enterprise.url", "some-random-token");
     }
 }

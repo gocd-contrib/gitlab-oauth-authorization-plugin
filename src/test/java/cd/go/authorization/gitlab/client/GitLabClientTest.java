@@ -58,6 +58,7 @@ public class GitLabClientTest {
 
         when(gitLabConfiguration.applicationId()).thenReturn("client-id");
         when(gitLabConfiguration.clientSecret()).thenReturn("client-secret");
+        when(gitLabConfiguration.clientScopesRequested()).thenReturn(List.of(GitLabConfiguration.DEFAULT_SCOPES));
         when(gitLabConfiguration.authenticateWith()).thenReturn(AuthenticateWith.GITLAB);
         when(gitLabConfiguration.gitLabBaseURL()).thenReturn("https://gitlab.com");
 
@@ -86,6 +87,17 @@ public class GitLabClientTest {
         assertThat(authorizationServerArgs).satisfies(args -> {
             assertThat(args.size()).isEqualTo(2);
             assertThat(args.get(0)).isEqualTo("http://enterprise.url/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=api&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
+        });
+    }
+
+    @Test
+    public void shouldReturnAuthorizationServerArgsWithMultipleScopes() throws Exception {
+        when(gitLabConfiguration.clientScopesRequested()).thenReturn(List.of("scope1", "scope2"));
+        final List<String> authorizationServerArgs = gitLabClient.authorizationServerArgs("call-back-url");
+
+        assertThat(authorizationServerArgs).satisfies(args -> {
+            assertThat(args.size()).isEqualTo(2);
+            assertThat(args.get(0)).isEqualTo("https://gitlab.com/oauth/authorize?client_id=client-id&redirect_uri=call-back-url&response_type=code&scope=scope1%20scope2&state=" + URLEncoder.encode(args.get(1), StandardCharsets.UTF_8));
         });
     }
 

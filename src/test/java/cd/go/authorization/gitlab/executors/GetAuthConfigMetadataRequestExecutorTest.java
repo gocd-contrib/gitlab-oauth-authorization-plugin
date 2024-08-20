@@ -58,6 +58,13 @@ public class GetAuthConfigMetadataRequestExecutorTest {
                 "    }\n" +
                 "  },\n" +
                 "  {\n" +
+                "    \"key\": \"ClientScopesRequested\",\n" +
+                "    \"metadata\": {\n" +
+                "      \"required\": true,\n" +
+                "      \"secure\": false\n" +
+                "    }\n" +
+                "  },\n" +
+                "  {\n" +
                 "    \"key\": \"AuthenticateWith\",\n" +
                 "    \"metadata\": {\n" +
                 "      \"required\": false,\n" +
@@ -75,7 +82,7 @@ public class GetAuthConfigMetadataRequestExecutorTest {
                 "   \"key\":\"PersonalAccessToken\"," +
                 "   \"metadata\":" +
                 "    {" +
-                "       \"required\":true," +
+                "       \"required\":false," +
                 "       \"secure\":true" +
                 "    }" +
                 "   }"+
