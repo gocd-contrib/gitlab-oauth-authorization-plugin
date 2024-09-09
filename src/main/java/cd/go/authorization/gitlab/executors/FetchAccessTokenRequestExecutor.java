@@ -16,6 +16,7 @@
 
 package cd.go.authorization.gitlab.executors;
 
+import cd.go.authorization.gitlab.Constants;
 import cd.go.authorization.gitlab.exceptions.NoAuthorizationConfigurationException;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
@@ -24,6 +25,8 @@ import cd.go.authorization.gitlab.requests.FetchAccessTokenRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import okhttp3.OkHttpClient;
+
+import java.util.Objects;
 
 public class FetchAccessTokenRequestExecutor implements RequestExecutor {
     private final FetchAccessTokenRequest request;
@@ -51,8 +54,9 @@ public class FetchAccessTokenRequestExecutor implements RequestExecutor {
 
         final AuthConfig authConfig = request.authConfigs().get(0);
         final GitLabConfiguration gitLabConfiguration = authConfig.gitLabConfiguration();
+        final String codeVerifier = Objects.requireNonNull(request.authSession().get(Constants.AUTH_CODE_VERIFIER), "OAuth2 Code verifier is missing");
 
-        final TokenInfo tokenInfo = gitLabConfiguration.gitLabClient().fetchAccessToken(request.requestParameters().get("code"));
+        final TokenInfo tokenInfo = gitLabConfiguration.gitLabClient().fetchAccessToken(request.requestParameters().get("code"), codeVerifier);
 
         return DefaultGoPluginApiResponse.success(tokenInfo.toJSON());
     }

@@ -75,7 +75,8 @@ public class FetchAccessTokenRequestExecutorTest {
         when(fetchAccessTokenRequest.requestParameters()).thenReturn(Collections.singletonMap("code", "code-received-in-previous-step"));
         when(authConfig.gitLabConfiguration()).thenReturn(gitLabConfiguration);
         when(gitLabConfiguration.gitLabClient()).thenReturn(gitLabClient);
-        when(gitLabClient.fetchAccessToken("code-received-in-previous-step")).thenReturn(new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token"));
+        when(fetchAccessTokenRequest.authSession()).thenReturn(Collections.singletonMap(Constants.AUTH_CODE_VERIFIER, "code-verifier"));
+        when(gitLabClient.fetchAccessToken("code-received-in-previous-step", "code-verifier")).thenReturn(new TokenInfo("token-444248275346-5758603453985735", "bearer", 7200, "refresh-token"));
 
         final GoPluginApiResponse response = executor.execute();
 

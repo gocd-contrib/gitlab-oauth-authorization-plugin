@@ -18,14 +18,19 @@ package cd.go.authorization.gitlab.client;
 
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-class StateGeneratorTest {
-    @Test
-    public void shouldGenerateState() {
-        String state = StateGenerator.generate();
-        assertNotNull(state);
-        assertThat(state).matches("[A-Za-z0-9_-]{43}=");
+import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
+public class CodeChallengeGeneratorTest {
+
+    @Test
+    public void shouldGenerate() {
+        List<String> codeChallengeDetails = CodeChallengeGenerator.generate();
+
+        assertThat(codeChallengeDetails).satisfies(args -> {
+            assertThat(args).hasSize(2);
+            assertThat(args.get(0)).matches("[A-Za-z0-9_-]{43}");
+            assertThat(args.get(1)).matches("[A-Za-z0-9_-]{43}");
+        });
     }
 }

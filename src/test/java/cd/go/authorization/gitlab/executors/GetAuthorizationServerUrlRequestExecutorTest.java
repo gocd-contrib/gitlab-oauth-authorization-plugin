@@ -69,13 +69,13 @@ public class GetAuthorizationServerUrlRequestExecutorTest {
         when(authConfig.gitLabConfiguration()).thenReturn(gitLabConfiguration);
         when(request.callbackUrl()).thenReturn("call-back-url");
         when(gitLabConfiguration.gitLabClient()).thenReturn(gitLabClient);
-        when(gitLabClient.authorizationServerArgs("call-back-url")).thenReturn(List.of("foo-url", "foo-state"));
+        when(gitLabClient.authorizationServerArgs("call-back-url")).thenReturn(List.of("foo-url", "foo-state", "foo-code-verifier"));
 
         final GoPluginApiResponse response = executor.execute();
 
         assertThat(response.responseCode()).isEqualTo(200);
         assertThat(response.responseBody())
                 .contains("\"authorization_server_url\":\"foo-url\"")
-                .contains("\"auth_session\":{\"oauth2_state\":\"foo-state\"}");
+                .contains("\"auth_session\":{\"oauth2_state\":\"foo-state\",\"oauth2_code_verifier\":\"foo-code-verifier\"}");
     }
 }
