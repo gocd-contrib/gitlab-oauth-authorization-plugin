@@ -49,7 +49,7 @@ public class GetAuthorizationServerUrlRequestExecutor implements RequestExecutor
 
         return DefaultGoPluginApiResponse.success(GSON.toJson(Map.of(
                 "authorization_server_url", args.get(0),
-                "auth_session", Map.of(Constants.AUTH_SESSION_STATE, args.get(1), Constants.AUTH_CODE_VERIFIER, args.get(2))
+                "auth_session", Map.of(Constants.AUTH_SESSION_STATE, args.get(1), Constants.AUTH_CODE_VERIFIER_ENCODED, args.get(2))
         )));
     }
 }

@@ -18,19 +18,17 @@ package cd.go.authorization.gitlab.client;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
-public class CodeChallengeGeneratorTest {
+public class ProofKeyTest {
 
     @Test
     public void shouldGenerate() {
-        List<String> codeChallengeDetails = CodeChallengeGenerator.generate();
+        ProofKey proofKey = new ProofKey();
 
-        assertThat(codeChallengeDetails).satisfies(args -> {
-            assertThat(args).hasSize(2);
-            assertThat(args.get(0)).matches("[A-Za-z0-9_-]{43}");
-            assertThat(args.get(1)).matches("[A-Za-z0-9_-]{43}");
+        assertThat(proofKey).satisfies(args -> {
+            assertThat(args.codeVerifierEncoded()).matches("[A-Za-z0-9_-]{43}");
+            assertThat(args.codeChallengeEncoded()).matches("[A-Za-z0-9_-]{43}");
+            assertThat(args.codeChallengeEncoded()).isNotEqualTo(args.codeVerifierEncoded());
         });
     }
 }

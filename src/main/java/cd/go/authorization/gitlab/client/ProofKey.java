@@ -17,12 +17,21 @@
 package cd.go.authorization.gitlab.client;
 
 import java.nio.charset.StandardCharsets;
-import java.security.*;
-import java.util.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.Base64;
 
-public class CodeChallengeGenerator {
-
+public class ProofKey {
     private static final SecureRandom RANDOM = new SecureRandom();
+
+    private final String codeVerifierEncoded;
+    private final String codeChallengeEncoded;
+
+    public ProofKey() {
+        this.codeVerifierEncoded = generateCodeVerifier();
+        this.codeChallengeEncoded = generateCodeChallenge(codeVerifierEncoded);
+    }
 
     private static String generateCodeVerifier() {
         byte[] codeVerifier = new byte[32];
@@ -30,17 +39,23 @@ public class CodeChallengeGenerator {
         return Base64.getUrlEncoder().withoutPadding().encodeToString(codeVerifier);
     }
 
-    public static List<String> generate() {
-        String codeVerifier = generateCodeVerifier();
+    private static String generateCodeChallenge(String codeVerifier) {
         byte[] bytes = codeVerifier.getBytes(StandardCharsets.US_ASCII);
-        MessageDigest messageDigest = null;
+        MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
         messageDigest.update(bytes, 0, bytes.length);
-        byte[] digest = messageDigest.digest();
-        return List.of(codeVerifier, Base64.getUrlEncoder().withoutPadding().encodeToString(digest));
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(messageDigest.digest());
+    }
+
+    public String codeVerifierEncoded() {
+        return codeVerifierEncoded;
+    }
+
+    public String codeChallengeEncoded() {
+        return codeChallengeEncoded;
     }
 }

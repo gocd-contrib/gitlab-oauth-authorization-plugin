@@ -57,7 +57,7 @@ public class GitLabClient {
 
     public List<String> authorizationServerArgs(String callbackUrl) {
         String state = StateGenerator.generate();
-        List<String> codeChallengeDetails = CodeChallengeGenerator.generate();
+        ProofKey proofKey = new ProofKey();
         String authorizationServerUrl = HttpUrl.parse(gitLabConfiguration.gitLabBaseURL()).newBuilder()
                 .addPathSegment("oauth")
                 .addPathSegment("authorize")
@@ -67,13 +67,13 @@ public class GitLabClient {
                 .addQueryParameter("scope", gitLabConfiguration.clientScopesRequested().stream().collect(Collectors.joining(" ")))
                 .addQueryParameter("state", state)
                 .addQueryParameter("code_challenge_method", "S256")
-                .addQueryParameter("code_challenge", codeChallengeDetails.get(1))
+                .addEncodedQueryParameter("code_challenge", proofKey.codeChallengeEncoded())
                 .build().toString();
 
-        return List.of(authorizationServerUrl, state, codeChallengeDetails.get(0));
+        return List.of(authorizationServerUrl, state, proofKey.codeVerifierEncoded());
     }
 
-    public TokenInfo fetchAccessToken(String code, String codeVerifier) throws IOException {
+    public TokenInfo fetchAccessToken(String code, String codeVerifierEncoded) throws IOException {
 
         final String accessTokenUrl = HttpUrl.parse(gitLabConfiguration.gitLabBaseURL())
                 .newBuilder()
@@ -86,7 +86,7 @@ public class GitLabClient {
                 .add("code", code)
                 .add("grant_type", "authorization_code")
                 .add("redirect_uri", CallbackURL.instance().getCallbackURL())
-                .add("code_verifier", codeVerifier).build();
+                .addEncoded("code_verifier", codeVerifierEncoded).build();
 
         final Request request = new Request.Builder()
                 .url(accessTokenUrl)

@@ -25,6 +25,8 @@ import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.Collections;
 import java.util.List;
@@ -74,8 +76,14 @@ public class GetAuthorizationServerUrlRequestExecutorTest {
         final GoPluginApiResponse response = executor.execute();
 
         assertThat(response.responseCode()).isEqualTo(200);
-        assertThat(response.responseBody())
-                .contains("\"authorization_server_url\":\"foo-url\"")
-                .contains("\"auth_session\":{\"oauth2_state\":\"foo-state\",\"oauth2_code_verifier\":\"foo-code-verifier\"}");
+        JSONAssert.assertEquals("""
+                {
+                  "authorization_server_url": "foo-url",
+                  "auth_session" : {
+                    "oauth2_state": "foo-state",
+                    "oauth2_code_verifier_encoded": "foo-code-verifier"
+                  }
+                }
+                """, response.responseBody(), JSONCompareMode.NON_EXTENSIBLE);
     }
 }

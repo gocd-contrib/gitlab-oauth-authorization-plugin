@@ -16,29 +16,18 @@
 
 package cd.go.authorization.gitlab.executors;
 
-import cd.go.authorization.gitlab.Constants;
 import cd.go.authorization.gitlab.exceptions.NoAuthorizationConfigurationException;
 import cd.go.authorization.gitlab.models.AuthConfig;
-import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.models.TokenInfo;
 import cd.go.authorization.gitlab.requests.FetchAccessTokenRequest;
 import com.thoughtworks.go.plugin.api.response.DefaultGoPluginApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
-import okhttp3.OkHttpClient;
-
-import java.util.Objects;
 
 public class FetchAccessTokenRequestExecutor implements RequestExecutor {
     private final FetchAccessTokenRequest request;
-    private final OkHttpClient httpClient;
 
     public FetchAccessTokenRequestExecutor(FetchAccessTokenRequest request) {
-        this(request, new OkHttpClient());
-    }
-
-    FetchAccessTokenRequestExecutor(FetchAccessTokenRequest request, OkHttpClient httpClient) {
         this.request = request;
-        this.httpClient = httpClient;
     }
 
     public GoPluginApiResponse execute() throws Exception {
@@ -46,17 +35,14 @@ public class FetchAccessTokenRequestExecutor implements RequestExecutor {
             throw new NoAuthorizationConfigurationException("[Get Access Token] No authorization configuration found.");
         }
 
-        if (!request.requestParameters().containsKey("code")) {
-            throw new IllegalArgumentException("Get Access Token] Expecting `code` in request params, but not received.");
-        }
-
         request.validateState();
 
-        final AuthConfig authConfig = request.authConfigs().get(0);
-        final GitLabConfiguration gitLabConfiguration = authConfig.gitLabConfiguration();
-        final String codeVerifier = Objects.requireNonNull(request.authSession().get(Constants.AUTH_CODE_VERIFIER), "OAuth2 Code verifier is missing");
-
-        final TokenInfo tokenInfo = gitLabConfiguration.gitLabClient().fetchAccessToken(request.requestParameters().get("code"), codeVerifier);
+        AuthConfig authConfig = request.authConfigs().get(0);
+        String codeVerifierEncoded = request.codeVerifierEncoded();
+        TokenInfo tokenInfo = authConfig
+                .gitLabConfiguration()
+                .gitLabClient()
+                .fetchAccessToken(request.authorizationCode(), codeVerifierEncoded);
 
         return DefaultGoPluginApiResponse.success(tokenInfo.toJSON());
     }
