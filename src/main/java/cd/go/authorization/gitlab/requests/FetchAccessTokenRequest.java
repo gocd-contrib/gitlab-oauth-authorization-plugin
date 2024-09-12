@@ -59,16 +59,18 @@ public class FetchAccessTokenRequest extends Request {
     }
 
     public void validateState() {
-        // GoCD versions prior to 23.2.0 don't return state, so we can't validate it, this is for backward compatibility
-        if (authSession == null) {
-            LOGGER.info("Skipped OAuth2 `state` validation, GoCD server < 23.2.0 does not support propagating auth_session parameters");
-            return;
-        }
-
         String redirectedState = Objects.requireNonNull(requestParameters().get("state"), "OAuth2 state is missing from redirect");
         String sessionState = Objects.requireNonNull(authSession.get(Constants.AUTH_SESSION_STATE), "OAuth2 state is missing from session");
         if (!MessageDigest.isEqual(redirectedState.getBytes(), sessionState.getBytes())) {
             throw new AuthenticationException("Redirected OAuth2 state from GitLab did not match previously generated state stored in session");
         }
+    }
+
+    public String authorizationCode() {
+        return Objects.requireNonNullElseGet(requestParameters().get("code"), () -> { throw new IllegalArgumentException("[Get Access Token] Expecting `code` in request params, but not received."); });
+    }
+
+    public String codeVerifierEncoded() {
+        return Objects.requireNonNullElseGet(authSession.get(Constants.AUTH_CODE_VERIFIER_ENCODED), () -> { throw new IllegalArgumentException("[Get Access Token] OAuth2 code verifier is missing from session"); });
     }
 }
