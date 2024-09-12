@@ -83,10 +83,12 @@ public class GitLabClient {
 
         final FormBody formBody = new FormBody.Builder()
                 .add("client_id", gitLabConfiguration.applicationId())
-                .add("code", code)
+                .add("client_secret", gitLabConfiguration.clientSecret())
                 .add("grant_type", "authorization_code")
+                .add("code", code)
+                .addEncoded("code_verifier", codeVerifierEncoded)
                 .add("redirect_uri", CallbackURL.instance().getCallbackURL())
-                .addEncoded("code_verifier", codeVerifierEncoded).build();
+                .build();
 
         final Request request = new Request.Builder()
                 .url(accessTokenUrl)

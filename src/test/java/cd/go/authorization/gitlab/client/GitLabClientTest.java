@@ -118,7 +118,7 @@ public class GitLabClientTest {
         RecordedRequest request = server.takeRequest();
         assertEquals("POST /oauth/token HTTP/1.1", request.getRequestLine());
         assertEquals("application/x-www-form-urlencoded", request.getHeaders().get("Content-Type"));
-        assertEquals("client_id=client-id&code=code&grant_type=authorization_code&redirect_uri=callback-url&code_verifier=code-verifier", request.getBody().readUtf8());
+        assertEquals("client_id=client-id&client_secret=client-secret&grant_type=authorization_code&code=code&code_verifier=code-verifier&redirect_uri=callback-url", request.getBody().readUtf8());
     }
 
     @Test
