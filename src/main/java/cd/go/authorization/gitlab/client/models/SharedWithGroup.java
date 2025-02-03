@@ -15,7 +15,7 @@ public class SharedWithGroup {
     @SerializedName("group_full_path")
     private String groupFullPath;
     @Expose
-    @SerializedName("access_level")
+    @SerializedName("group_access_level")
     private AccessLevel accessLevel;
     @Expose
     @SerializedName("expires_at")
