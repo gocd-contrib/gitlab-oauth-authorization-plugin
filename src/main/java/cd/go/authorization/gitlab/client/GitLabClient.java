@@ -23,6 +23,7 @@ import cd.go.authorization.gitlab.client.models.GitLabUser;
 import cd.go.authorization.gitlab.client.models.MembershipInfo;
 import cd.go.authorization.gitlab.models.GitLabConfiguration;
 import cd.go.authorization.gitlab.models.TokenInfo;
+import cd.go.authorization.gitlab.utils.Util;
 import okhttp3.*;
 
 import java.io.IOException;
@@ -173,15 +174,7 @@ public class GitLabClient {
     }
 
     private <T> T executeRequest(Request request, Callback<T> callback) throws IOException {
-        final Response response = httpClient.newCall(request).execute();
-
-        if (!response.isSuccessful()) {
-            final String responseBody = response.body().string();
-            final String errorMessage = isNotBlank(responseBody) ? responseBody : response.message();
-            throw new RuntimeException(format(API_ERROR_MSG, request.url().encodedPath(), errorMessage));
-        }
-
-        return callback.onResponse(response);
+        return callback.onResponse(successfulResponseFor(request));
     }
 
     /**
@@ -190,34 +183,35 @@ public class GitLabClient {
     private <E, T extends List<E>> List<E> executeRequestRepeated(Request request, Callback<T> callback) throws IOException {
         HttpUrl originalUrl = request.url();
         List<E> result = new ArrayList<>();
-        do {
-            final Response response = httpClient.newCall(request).execute();
 
-            if (!response.isSuccessful()) {
-                final String responseBody = response.body().string();
-                final String errorMessage = isNotBlank(responseBody) ? responseBody : response.message();
-                throw new RuntimeException(format(API_ERROR_MSG, request.url().encodedPath(), errorMessage));
+        String nextPage = null;
+
+        do {
+            if (nextPage != null) {
+                request = request.newBuilder()
+                        .url(originalUrl.newBuilder().addQueryParameter("page", nextPage.trim()).build())
+                        .build();
             }
+            final Response response = successfulResponseFor(request);
 
             result.addAll(callback.onResponse(response));
 
             // Check if there are more pages to load
-            String nextPage = response.header("x-next-page");
-            if (nextPage != null && !nextPage.trim().isEmpty()) {
-                HttpUrl url = originalUrl
-                        .newBuilder()
-                        .addQueryParameter("page", nextPage.trim())
-                        .build();
-                request = request
-                        .newBuilder()
-                        .url(url)
-                        .build();
-                continue;
-            }
-            break;
-        } while (true);
+            nextPage = response.header("x-next-page");
+        } while (Util.isNotBlank(nextPage));
 
         return result;
+    }
+
+    private Response successfulResponseFor(Request request) throws IOException {
+        final Response response = httpClient.newCall(request).execute();
+
+        if (!response.isSuccessful()) {
+            final String responseBody = response.body() != null ? response.body().string() : "";
+            final String errorMessage = isNotBlank(responseBody) ? responseBody : response.message();
+            throw new RuntimeException(format(API_ERROR_MSG, request.url().encodedPath(), errorMessage));
+        }
+        return response;
     }
 
     private void validateTokenInfo(TokenInfo tokenInfo) {
