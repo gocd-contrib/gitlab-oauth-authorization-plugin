@@ -128,7 +128,7 @@ public class GitLabProject {
     private boolean publicJobs;
     @SerializedName("shared_with_groups")
     @Expose
-    private List<String> sharedWithGroups = null;
+    private List<SharedWithGroup> sharedWithGroups = null;
     @SerializedName("only_allow_merge_if_pipeline_succeeds")
     @Expose
     private boolean onlyAllowMergeIfPipelineSucceeds;
@@ -292,7 +292,7 @@ public class GitLabProject {
         return publicJobs;
     }
 
-    public List<String> getSharedWithGroups() {
+    public List<SharedWithGroup> getSharedWithGroups() {
         return sharedWithGroups;
     }
 
