@@ -24,7 +24,8 @@ import cd.go.authorization.gitlab.models.TokenInfo;
 import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import mockwebserver3.RecordedRequest;
-import mockwebserver3.junit5.internal.MockWebServerExtension;
+import mockwebserver3.junit5.StartStop;
+import mockwebserver3.junit5.internal.StartStopExtension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,18 +43,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-@ExtendWith(MockWebServerExtension.class)
+@ExtendWith(StartStopExtension.class)
 public class GitLabClientTest {
+
+    @StartStop
+    private final MockWebServer server = new MockWebServer();
 
     @Mock
     private GitLabConfiguration gitLabConfiguration;
     private GitLabClient gitLabClient;
 
-    private MockWebServer server;
-
     @BeforeEach
-    public void setUp(MockWebServer server) throws Exception {
-        this.server = server;
+    public void setUp() throws Exception {
         openMocks(this);
 
         when(gitLabConfiguration.applicationId()).thenReturn("client-id");
@@ -118,7 +119,7 @@ public class GitLabClientTest {
         RecordedRequest request = server.takeRequest();
         assertEquals("POST /oauth/token HTTP/1.1", request.getRequestLine());
         assertEquals("application/x-www-form-urlencoded", request.getHeaders().get("Content-Type"));
-        assertEquals("client_id=client-id&client_secret=client-secret&grant_type=authorization_code&code=code&code_verifier=code-verifier&redirect_uri=callback-url", request.getBody().readUtf8());
+        assertEquals("client_id=client-id&client_secret=client-secret&grant_type=authorization_code&code=code&code_verifier=code-verifier&redirect_uri=callback-url", request.getBody().utf8());
     }
 
     @Test
