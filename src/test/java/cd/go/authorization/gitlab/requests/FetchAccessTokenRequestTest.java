@@ -16,6 +16,7 @@
 
 package cd.go.authorization.gitlab.requests;
 
+import cd.go.authorization.gitlab.exceptions.AuthenticationException;
 import cd.go.authorization.gitlab.executors.FetchAccessTokenRequestExecutor;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
@@ -28,17 +29,35 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 public class FetchAccessTokenRequestTest {
+    public static final String WITHOUT_SESSION_STATE_RESPONSE = """
+            {
+              "auth_configs": [
+                {
+                  "id": "gitlab-auth-config",
+                  "configuration": {
+                    "GoServerUrl": "https://your.go.server.url",
+                    "ApplicationId": "client-id",
+                    "ClientSecret": "client-secret"
+                  }
+                }
+              ],
+              "auth_session": {
+                "oauth2_code_verifier_encoded": "code-verifier"
+              }
+            }
+            """;
     @Mock
     private GoPluginApiRequest apiRequest;
 
     @BeforeEach
     public void setUp() throws Exception {
         openMocks(this);
-        when(apiRequest.requestParameters()).thenReturn(Map.of("code", "authorization-code"));
+        when(apiRequest.requestParameters()).thenReturn(Map.of("code", "authorization-code", "state", "some-state-value"));
         when(apiRequest.requestBody()).thenReturn("""
                 {
                   "auth_configs": [
@@ -52,6 +71,7 @@ public class FetchAccessTokenRequestTest {
                     }
                   ],
                   "auth_session": {
+                    "oauth2_state": "some-state-value",
                     "oauth2_code_verifier_encoded": "code-verifier"
                   }
                 }
@@ -70,7 +90,45 @@ public class FetchAccessTokenRequestTest {
         assertThat(authConfig.gitLabConfiguration().applicationId()).isEqualTo("client-id");
         assertThat(authConfig.gitLabConfiguration().clientSecret()).isEqualTo("client-secret");
 
-        assertThat(request.authSession()).containsOnly(Map.entry("oauth2_code_verifier_encoded", "code-verifier"));
+        assertThat(request.authSession()).containsExactly(
+                Map.entry("oauth2_state", "some-state-value"),
+                Map.entry("oauth2_code_verifier_encoded", "code-verifier")
+        );
+    }
+
+    @Test
+    public void validateStateShouldSucceedWhenSessionStateMatchesRequest() {
+        when(apiRequest.requestParameters()).thenReturn(Map.of("state", "some-state-value"));
+
+        final FetchAccessTokenRequest request = FetchAccessTokenRequest.from(apiRequest);
+        request.validateState();
+    }
+
+    @Test
+    public void validateStateShouldFailWhenRequestParamIsMissing() {
+        when(apiRequest.requestParameters()).thenReturn(Map.of("code", "authorization-code"));
+        final FetchAccessTokenRequest request = FetchAccessTokenRequest.from(apiRequest);
+        Exception error = assertThrows(NullPointerException.class, request::validateState);
+        assertThat(error.getMessage()).isEqualTo("OAuth2 state is missing from redirect");
+    }
+
+    @Test
+    public void validateStateShouldFailWhenSessionStateIsMissing() {
+        when(apiRequest.requestBody()).thenReturn(WITHOUT_SESSION_STATE_RESPONSE);
+        when(apiRequest.requestParameters()).thenReturn(Map.of("state", "some-state-value"));
+
+        final FetchAccessTokenRequest request = FetchAccessTokenRequest.from(apiRequest);
+        Exception error = assertThrows(NullPointerException.class, request::validateState);
+        assertThat(error.getMessage()).isEqualTo("OAuth2 state is missing from session");
+    }
+
+    @Test
+    public void validateStateShouldFailWhenSessionStateDoesntMatch() {
+        when(apiRequest.requestParameters()).thenReturn(Map.of("state", "some-other-state-value"));
+
+        final FetchAccessTokenRequest request = FetchAccessTokenRequest.from(apiRequest);
+        Exception error = assertThrows(AuthenticationException.class, request::validateState);
+        assertThat(error.getMessage()).isEqualTo("Redirected OAuth2 state from GitLab did not match previously generated state stored in session");
     }
 
     @Test
