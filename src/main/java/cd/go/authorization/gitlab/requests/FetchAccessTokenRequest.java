@@ -22,7 +22,6 @@ import cd.go.authorization.gitlab.executors.FetchAccessTokenRequestExecutor;
 import cd.go.authorization.gitlab.models.AuthConfig;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 
 import java.security.MessageDigest;
@@ -31,8 +30,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class FetchAccessTokenRequest extends Request {
-    private static final Logger LOGGER = Logger.getLoggerFor(FetchAccessTokenRequest.class);
-
     @Expose
     @SerializedName("auth_configs")
     private List<AuthConfig> authConfigs;

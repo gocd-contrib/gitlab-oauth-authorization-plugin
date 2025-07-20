@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static cd.go.authorization.gitlab.GitLabPlugin.LOG;
 import static cd.go.authorization.gitlab.utils.Util.isNotBlank;
@@ -66,7 +65,7 @@ public class GitLabClient {
                 .addQueryParameter("client_id", gitLabConfiguration.applicationId())
                 .addQueryParameter("redirect_uri", callbackUrl)
                 .addQueryParameter("response_type", "code")
-                .addQueryParameter("scope", gitLabConfiguration.clientScopesRequested().stream().collect(Collectors.joining(" ")))
+                .addQueryParameter("scope", String.join(" ", gitLabConfiguration.clientScopesRequested()))
                 .addQueryParameter("state", state)
                 .addQueryParameter("code_challenge_method", "S256")
                 .addEncodedQueryParameter("code_challenge", proofKey.codeChallengeEncoded())
